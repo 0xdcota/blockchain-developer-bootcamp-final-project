@@ -6,45 +6,79 @@ pragma solidity 0.8.2;
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/IAssetsAccountant.sol";
 
-contract HouseOfReserve is Initializable {
+contract HouseOfReserveState {
 
   struct Factor{
     uint numerator;
     uint denominator;
   }
 
-  Factor public collaterizationRatio;
-
-  address public backedAsset;
-
   address public reserveAsset;
 
   uint public tokenID;
 
-  function initialize(address _backedAsset, address _reserveAsset, Factor calldata _collaterizationRatio) public initializer() {
-    backedAsset = _backedAsset;
+  Factor public collaterizationRatio;
+
+  IAssetsAccountant public assetsAccountant;
+
+  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    
+  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+}
+
+contract HouseOfReserve is Initializable, HouseOfReserveState {
+
+  // HouseOfReserve Events
+
+  /* 
+   * Emit when user makes an asset deposit in HouseOfReserve
+   */
+  event UserDeposit(address indexed user, address indexed asset, uint amount);
+  /* 
+   * Emit when user makes an asset withdrawal from HouseOfReserve
+   */
+  event UserWithdraw(address indexed user, address indexed asset, uint amount);
+
+
+  function initialize(
+    address _reserveAsset,
+    Factor calldata _collaterizationRatio,
+    address _assetsAccountant
+  ) public initializer()
+  {
     reserveAsset = _reserveAsset;
-    tokenID = uint(keccak256(abi.encodePacked(backedAsset, reserveAsset, "collateral")));
+    tokenID = uint(keccak256(abi.encodePacked(reserveAsset, "collateral")));
     collaterizationRatio = _collaterizationRatio;
+    assetsAccountant = IAssetsAccountant(_assetsAccountant);
   }
 
-  function deposit(uint amount) public returns(bool){
+  function deposit(uint amount) public {
     // Validate input amount.
+    require(amount>0, "Zero input amount!");
 
     // Check ERC20 approval of msg.sender.
+    require(IERC20(reserveAsset).allowance(msg.sender, address.this) >= amount, "Not enough ERC20 allowance!");
 
     // Transfer reserveAsset amount to this contract.
+    IERC20(reserveAsset).transferFrom(msg.sender, address.this, amount);
 
     // Mint in AssetsAccountant received amount.
-
+    assetsAccountant.mint(msg.sender, tokenID, amount, "");
+    
     // Emit deposit event.
-
-    return false;
+    emit UserDeposit(msg.sender, reserveAsset, amount);
   }
 
   function withdraw(uint amount) public returns(bool) {
     // Validate input amount.
+    require(
+      amount > 0 && 
+      amount <= IERC1155(address(assetsAccountant)).balanceOf(msg.sender, tokenID),
+      "Invalid input amount!"
+    );
 
     // Check if msg.sender has minted backedAsset.
 
