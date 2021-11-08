@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-interface IHouseOfReserve {
+import "./Ihouse.sol";
+
+interface IHouseOfReserve is IHouse.sol {
 
     /**
      * @dev Returns the reserveAsset of a HouseOfReserve.

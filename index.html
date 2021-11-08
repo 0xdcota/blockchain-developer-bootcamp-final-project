@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Project App</title>
+</head>
+<body>
+
+  <h1>Digital Currencies App</h1>
+
+  <hr>
+
+  <div class="metamask" >
+    <button id="connectButton">Connect</button>
+    <label>
+      Account: <span id="getAccountsResult"></span>
+    </label>
+  </div>
+
+  <hr>
+
+  <div class="asset-interface">
+    <div class="row1">
+      <h3>House of Reserves</h3>
+    </div>
+    <div class="row2">
+      <h4>Reserve Asset: MockWETH</h4>
+      <label>
+        Your Deposited Reserves: <span id="your-reserves"></span> MockWETH
+      </label>
+    </div>
+    <div class="row3">
+      <input id="eth-supply" type="text" placeholder="amount to supply (wad)" />
+      <button id="deposit-button">Deposit in Reserve</button>
+    </div>
+    <div class="row4">
+      <input id="eth-redeem" type="text" placeholder="amount to withdraw (wad)" />
+      <button id="withdraw-button">Withdraw from Reserve</button>
+    </div>
+  </div>
+  <hr>
+
+  <div class="asset-interface">
+    <div class="row1">
+      <h3>House of Coin Minting</h3>
+    </div>
+    <div class="row2">
+      <h4>Backed Asset to Mint: eMXN</h4>
+      <label>
+        Your Minted Amount: <span id="your-minted"></span> eMXN
+      </label>
+    </div>
+    <div class="row3">
+      <input id="usdc-supply" type="text" placeholder="amount to mint (wad)" />
+      <button id="usdc-supply-button">Mint eMXN and Lock Reserve</button>
+    </div>
+    <div class="row4">
+      <input id="usdc-redeem" type="text" placeholder="amount to burn (wad)" />
+      <button id="usdc-redeem-button">Burn eMXN to release Reserve</button>
+    </div>
+  </div>
+
+  <script src="node_modules/@metamask/onboarding/dist/metamask-onboarding.bundle.js" defer></script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js" type="text/javascript"> </script>
+  <script src="./frontend-app/app.js" defer></script>
+
+</body>
+
+</html>
