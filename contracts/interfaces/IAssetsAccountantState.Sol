@@ -8,7 +8,9 @@ interface IAssetsAccountantState {
      */
     function houseOfReserves(address reserveAsset) external view returns(address);
 
-    // backedAsset address => houseOfCoin
+    /**
+     * @dev Returns the address of the HouseOfCoin corresponding to backedAsset.
+     */
     function houseOfCoins(address backedAsset) external view returns(address);
 
 }

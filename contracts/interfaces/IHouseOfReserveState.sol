@@ -1,14 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-import "./Ihouse.sol";
+interface IHouseOfReserveState {
 
-interface IHouseOfReserveState is IHouse.sol {
+    struct Factor{
+        uint numerator;
+        uint denominator;
+    }
+
+    /**
+    * @dev Returns the type of House Contract.
+    */
+    function HOUSE_TYPE() external returns(bytes32);
 
     /**
      * @dev Returns the collateralizationRatio of a HouseOfReserve.
      */
-    function collaterizationRatio() external view returns(Factor);
+    function collaterizationRatio() external view returns(Factor memory);
 
     /**
      * @dev Returns the reserveAsset of this HouseOfReserve.

@@ -24,6 +24,10 @@ contract HouseOfReserveState {
 
   uint public tokenID;
 
+  /**
+  * Requirements:
+  * - should be numerator > denominator
+  */
   Factor public collaterizationRatio;
 
   IAssetsAccountant public assetsAccountant;
@@ -54,6 +58,9 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     address _assetsAccountant
   ) public initializer()
   {
+    // Check CollateralizationRatio input
+    require(_collaterizationRatio.numerator > _collaterizationRatio.denominator, "wrong _collaterizationRatio params!");
+
     reserveAsset = _reserveAsset;
     backedAsset = _backedAsset;
     tokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "collateral")));

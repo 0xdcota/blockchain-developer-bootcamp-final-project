@@ -1,9 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-import "./IHouse.sol";
+interface IHouseOfCoinState {
 
-interface IHouseOfCoinState is IHouse {
+    struct Factor{
+        uint numerator;
+        uint denominator;
+    }
+
+    /**
+    * @dev Returns the type of House Contract.
+    */
+    function HOUSE_TYPE() external returns(bytes32);
 
     /**
     * @dev Returns the backedAsset that is minted by this HouseOfCoin.

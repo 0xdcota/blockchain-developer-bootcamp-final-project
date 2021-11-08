@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./interfaces/IHouseOfReserveState.sol";
-import "./interfaces/IHouseOfCoinSate.sol";
+import "./interfaces/IHouseOfCoinState.sol";
 
 contract AssetsAccountantState {
 
@@ -44,7 +44,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
     }
 
     function registerHouse(address houseAddress, address asset) 
-        external override
+        external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         // Check if House has been previously registered.
@@ -52,13 +52,16 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
 
         // Check type of House being registered and proceed accordingly
 
-        if(IHouse(houseAddress).HOUSE_TYPE() == keccak256("RESERVE_HOUSE")) {
+        if(IHouseOfReserveState(houseAddress).HOUSE_TYPE() == keccak256("RESERVE_HOUSE")) {
+
+            IHouseOfReserveState hOfReserve = IHouseOfReserveState(houseAddress);
+
             // Check that asset has NOT a house address assigned
             require(houseOfReserves[asset] != address(0), "ReserveAsset already registered!");
 
             // Check intended asset matches House
             require(
-                IHouseOfReserve.reserveAsset() == asset,
+                hOfReserve.reserveAsset() == asset,
                 "Asset input does not matche reserveAsset in houseAddress!"
             );
 
@@ -70,15 +73,18 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
             _setupRole(MINTER_ROLE, houseAddress);
             _setupRole(BURNER_ROLE, houseAddress);
 
-            emit HouseRegistered(houseAddress, IHouse(houseAddress).HOUSE_TYPE(), asset);
+            emit HouseRegistered(houseAddress, hOfReserve.HOUSE_TYPE(), asset);
             
-        } else if (IHouse(houseAddress).HOUSE_TYPE() == keccak256("COIN_HOUSE")) {
+        } else if (IHouseOfCoinState(houseAddress).HOUSE_TYPE() == keccak256("COIN_HOUSE")) {
+
+            IHouseOfCoinState hOfCoin = IHouseOfCoinState(houseAddress);
+
             // Check that asset has NOT a house address assigned
             require(houseOfCoins[asset] != address(0), "backedAsset already registered!");
 
             // Check intended asset matches House
             require(
-                IHouseOfCoin.backedAsset() == asset,
+                hOfCoin.backedAsset() == asset,
                 "Asset input does not matche backedAsset in houseAddress!"
             );
 
@@ -90,7 +96,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
             _setupRole(MINTER_ROLE, houseAddress);
             _setupRole(BURNER_ROLE, houseAddress);
 
-            emit HouseRegistered(houseAddress, IHouse(houseAddress).HOUSE_TYPE(), asset);
+            emit HouseRegistered(houseAddress, hOfCoin.HOUSE_TYPE(), asset);
 
         } else {
             revert("house address type invalid!");
@@ -102,14 +108,14 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
     }
 
     function mint(address account, uint256 id, uint256 amount, bytes memory data)
-        external override
+        external
         onlyRole(MINTER_ROLE)
     {
         _mint(account, id, amount, data);
     }
 
     function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        external override
+        external
         onlyRole(MINTER_ROLE)
     {
         _mintBatch(to, ids, amounts, data);
