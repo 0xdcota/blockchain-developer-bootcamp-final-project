@@ -6,14 +6,18 @@ pragma solidity 0.8.2;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-import "./interfaces/IAssetsAccountant.sol";
-import "./interfaces/IHouseOfReserve.sol";
+import "./interfaces/IHouseOfReserveState.sol";
+import "./interfaces/IHouseOfCoinSate.sol";
 
 contract AssetsAccountantState {
 
-    mapping(address => address) public houseOfReserveForAsset;
+    // reserveAsset address => houseOfReserve 
+    mapping(address => address) public houseOfReserves;
 
-    mapping(address => bool) internal _isARegisteredHouseOfReserve;
+    // backedAsset address => houseOfCoin
+    mapping(address => address) public houseOfCoins;
+
+    mapping(address => bool) internal _isARegisteredHouse;
 
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
 
@@ -23,14 +27,14 @@ contract AssetsAccountantState {
 
 }
 
-contract AssetsAccountant is IAssetsAccountant, ERC1155, AccessControl, AssetsAccountantState {
+contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
 
     // AssetsAccountant Events
 
     /* 
     * Emit when a HouseOfReserve is registered with AssetsAccountant
     */
-    event HouseOfReserveRegistered(address houseOfReserve, address reserveAsset);
+    event HouseRegistered(address house, bytes32 indexed typeOfHouse, address indexed asset);
 
     constructor() ERC1155("") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -43,23 +47,54 @@ contract AssetsAccountant is IAssetsAccountant, ERC1155, AccessControl, AssetsAc
         external override
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        // Check if House is not registered
-        require(!isARegisteredHouseOfReserve[houseOfReserve], "HouseOfReserved already registered!");
+        // Check if House has been previously registered.
+        require(!_isARegisteredHouse[houseAddress], "House already registered!");
 
-        // Check if asset already has a House assigned
-        require(houseOfReserveForAsset[reserveAsset] != address(0), "reserveAsset already registered!");
+        // Check type of House being registered and proceed accordingly
 
-        // Check intended asset matches House
-        require(IHouseOfReserve.reserveAsset() == reserveAsset(), "intended reserveAsset and HouseOfReserve do not match!");
-        require();
+        if(IHouse(houseAddress).HOUSE_TYPE() == keccak256("RESERVE_HOUSE")) {
+            // Check that asset has NOT a house address assigned
+            require(houseOfReserves[asset] != address(0), "ReserveAsset already registered!");
 
-        // Register mappings
-        houseOfReserveForAsset[reserveAsset] = houseOfReserve;
-        _isARegisteredHouseOfReserve[houseOfReserve] = true;
+            // Check intended asset matches House
+            require(
+                IHouseOfReserve.reserveAsset() == asset,
+                "Asset input does not matche reserveAsset in houseAddress!"
+            );
 
-        // Assign Roles
-        _setupRole(MINTER_ROLE, houseOfReserve);
-        _setupRole(BURNER_ROLE, houseOfReserve);
+            // Register mappings
+            houseOfReserves[asset] = houseAddress;
+            _isARegisteredHouse[houseAddress] = true;
+
+            // Assign Roles
+            _setupRole(MINTER_ROLE, houseAddress);
+            _setupRole(BURNER_ROLE, houseAddress);
+
+            emit HouseRegistered(houseAddress, IHouse(houseAddress).HOUSE_TYPE(), asset);
+            
+        } else if (IHouse(houseAddress).HOUSE_TYPE() == keccak256("COIN_HOUSE")) {
+            // Check that asset has NOT a house address assigned
+            require(houseOfCoins[asset] != address(0), "backedAsset already registered!");
+
+            // Check intended asset matches House
+            require(
+                IHouseOfCoin.backedAsset() == asset,
+                "Asset input does not matche backedAsset in houseAddress!"
+            );
+
+            // Register mappings
+            houseOfCoins[asset] = houseAddress;
+            _isARegisteredHouse[houseAddress] = true;
+
+            // Assign Roles
+            _setupRole(MINTER_ROLE, houseAddress);
+            _setupRole(BURNER_ROLE, houseAddress);
+
+            emit HouseRegistered(houseAddress, IHouse(houseAddress).HOUSE_TYPE(), asset);
+
+        } else {
+            revert("house address type invalid!");
+        }
     }
 
     function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {

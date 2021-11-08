@@ -11,12 +11,16 @@ import "./interfaces/IAssetsAccountant.sol";
 
 contract HouseOfReserveState {
 
+  bytes32 public constant HOUSE_TYPE = keccak256("RESERVE_HOUSE");
+
   struct Factor{
     uint numerator;
     uint denominator;
   }
 
   address public reserveAsset;
+
+  address public backedAsset;
 
   uint public tokenID;
 
@@ -45,12 +49,14 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
 
   function initialize(
     address _reserveAsset,
+    address _backedAsset,
     Factor calldata _collaterizationRatio,
     address _assetsAccountant
   ) public initializer()
   {
     reserveAsset = _reserveAsset;
-    tokenID = uint(keccak256(abi.encodePacked(reserveAsset, "collateral")));
+    backedAsset = _backedAsset;
+    tokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "collateral")));
     collaterizationRatio = _collaterizationRatio;
     assetsAccountant = IAssetsAccountant(_assetsAccountant);
   }

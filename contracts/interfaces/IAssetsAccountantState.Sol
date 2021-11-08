@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.2;
+
+interface IAssetsAccountantState {
+
+    /**
+     * @dev Returns the address of the HouseOfReserve corresponding to reserveAsset.
+     */
+    function houseOfReserves(address reserveAsset) external view returns(address);
+
+    // backedAsset address => houseOfCoin
+    function houseOfCoins(address backedAsset) external view returns(address);
+
+}

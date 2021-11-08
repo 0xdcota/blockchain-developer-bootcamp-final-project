@@ -2,7 +2,15 @@
 pragma solidity 0.8.2;
 
 interface IAssetsAccountant {
-
+    
+    /**
+     * @dev Registers a HouseOfReserve or HouseOfCoinMinting contract address in AssetsAccountant.
+     * grants MINTER_ROLE and BURNER_ROLE to House
+     * Requirements:
+     * - the caller must have ADMIN_ROLE.
+     */
+    function registerHouse(address houseAddress, address asset) external;
+    
     /**
      * @dev Creates `amount` new tokens for `to`, of token type `id`.
      * See {ERC1155-_mint}.
@@ -29,12 +37,6 @@ interface IAssetsAccountant {
      */
     function burnBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external;
 
-    /**
-     * @dev Registers a HouseOfReserve or HouseOfCoinMinting contract address in AssetsAccountant.
-     * grants MINTER_ROLE and BURNER_ROLE to House
-     * Requirements:
-     * - the caller must have ADMIN_ROLE.
-     */
-    function registerHouse(address houseAddress, address asset) external;
+
 
 }
