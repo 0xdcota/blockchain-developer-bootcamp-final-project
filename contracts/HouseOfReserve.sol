@@ -7,30 +7,46 @@ pragma solidity 0.8.2;
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import "./interfaces/IAssetsAccountant.sol";
+import "./interfaces/IOracle.sol";
 
 contract HouseOfReserveState {
 
-  bytes32 public constant HOUSE_TYPE = keccak256("RESERVE_HOUSE");
+  // HouseOfReserve Events
+  /* 
+  * @dev Emit when user makes an asset deposit in this HouseOfReserve
+  */
+  event UserDeposit(address indexed user, address indexed asset, uint amount);
+  /* 
+  * @dev Emit when user makes an asset withdrawal from this HouseOfReserve
+  */
+  event UserWithdraw(address indexed user, address indexed asset, uint amount);
 
   struct Factor{
-    uint numerator;
-    uint denominator;
+      uint numerator;
+      uint denominator;
   }
 
   address public reserveAsset;
 
   address public backedAsset;
 
-  uint public tokenID;
+  uint public reserveTokenID;
+
+  uint public  backedTokenID;
 
   /**
   * Requirements:
   * - should be numerator > denominator
   */
-  Factor public collaterizationRatio;
+  Factor public collatRatio;
 
   IAssetsAccountant public assetsAccountant;
+
+  IOracle public oracle;
+
+  bytes32 public constant HOUSE_TYPE = keccak256("RESERVE_HOUSE");
 
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     
@@ -39,33 +55,22 @@ contract HouseOfReserveState {
 
 contract HouseOfReserve is Initializable, HouseOfReserveState {
 
-  // HouseOfReserve Events
-
-  /* 
-   * Emit when user makes an asset deposit in HouseOfReserve
-   */
-  event UserDeposit(address indexed user, address indexed asset, uint amount);
-  /* 
-   * Emit when user makes an asset withdrawal from HouseOfReserve
-   */
-  event UserWithdraw(address indexed user, address indexed asset, uint amount);
-
-
   function initialize(
     address _reserveAsset,
     address _backedAsset,
-    Factor calldata _collaterizationRatio,
-    address _assetsAccountant
-  ) public initializer()
-  {
-    // Check CollateralizationRatio input
-    require(_collaterizationRatio.numerator > _collaterizationRatio.denominator, "wrong _collaterizationRatio params!");
+    address _assetsAccountant,
+    address _oracle
+  ) public initializer() {
 
     reserveAsset = _reserveAsset;
     backedAsset = _backedAsset;
-    tokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "collateral")));
-    collaterizationRatio = _collaterizationRatio;
+    reserveTokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "collateral")));
+    backedTokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "backedAsset")));
+    collatRatio.numerator = 150;
+    collatRatio.denominator = 100;
     assetsAccountant = IAssetsAccountant(_assetsAccountant);
+    oracle = IOracle(_oracle);
+
   }
 
   function deposit(uint amount) public {
@@ -79,29 +84,76 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     IERC20(reserveAsset).transferFrom(msg.sender, address(this), amount);
 
     // Mint in AssetsAccountant received amount.
-    assetsAccountant.mint(msg.sender, tokenID, amount, "");
+    assetsAccountant.mint(msg.sender, reserveTokenID, amount, "");
     
     // Emit deposit event.
     emit UserDeposit(msg.sender, reserveAsset, amount);
   }
 
-  function withdraw(uint amount) public view returns(bool) {
-    // Validate input amount.
+  function withdraw(uint amount) public {
+    // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
+    (uint reserveBal, uint mintedCoinBal) =  _checkBalances(reserveTokenID, backedTokenID);
+    
+    // Validate user has reserveBal, and input amount is greater than zero, and less than msg.sender reserves deposits.
     require(
+      reserveBal > 0 &&
       amount > 0 && 
-      amount <= IERC1155(address(assetsAccountant)).balanceOf(msg.sender, tokenID),
+      amount <= reserveBal,
       "Invalid input amount!"
     );
 
-    // Check if msg.sender has minted backedAsset.
+    // Get max withdrawal amount
+    uint maxWithdrawal = _checkMaxWithdrawal(reserveBal, mintedCoinBal);
 
-    // Check if withdrawal amount does not result in insolvency or undercollateralization or msg.sender.
+    // Check maxWithdrawal is greater than or equal to the withdraw amount.
+    require(maxWithdrawal >= amount, "Invalid input amount!");
 
-    // Burn in AssetsAccountant amount.
+    // Burn at AssetAccountant withdrawal amount.
+    assetsAccountant.burn(
+      msg.sender,
+      reserveTokenID,
+      amount
+    );
 
-    // Transfer reserveAsset to msg.sender
+    // Transfer Asset to msg.sender
+    IERC20(reserveAsset).transfer(msg.sender, amount);
 
-    return false;
   }
 
+  function _checkBalances(
+      uint _reservesTokenID,
+      uint _bAssetRTokenID
+  ) internal view returns (uint reserveBal, uint mintedCoinBal) {
+      reserveBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _reservesTokenID);
+      mintedCoinBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _bAssetRTokenID);
+  }
+
+  function _checkMaxWithdrawal(uint _reserveBal, uint _mintedCoinBal) internal view returns(uint) {
+    // Get price
+    // Price should be: backedAsset per unit of reserveAsset {backedAsset / reserveAsset}
+    uint price = oracle.getLastPrice();
+
+    // Check if msg.sender has minted backedAsset, if yes compute:
+    // The minimum required balance to back 100% all minted coins of backedAsset.
+    // Else, return 0.
+    uint minReqReserveBal = _mintedCoinBal > 0 ? 
+      (_mintedCoinBal * 10**(oracle.oraclePriceDecimals())) / price :
+      0
+    ;
+
+    // Reduce _reserveBal by collateralization factor.
+    uint reserveBalreducedByFactor =
+        ( _reserveBal * collatRatio.denominator) / collatRatio.numerator;
+
+    if(minReqReserveBal > reserveBalreducedByFactor) {
+      // Return zero if undercollateralized or insolvent
+      return 0;
+    } else if (minReqReserveBal <= reserveBalreducedByFactor && minReqReserveBal > 0 ) {
+      // Return the max withrawal amount, if msg.sender has mintedCoin balance and in healthy collateralized
+      return (reserveBalreducedByFactor - minReqReserveBal);
+    } else {
+      // Return _reserveBal if msg.sender has no minted coin.
+      return _reserveBal;
+    }
+  }
 }

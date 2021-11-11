@@ -19,6 +19,9 @@ contract AssetsAccountantState {
 
     mapping(address => bool) internal _isARegisteredHouse;
 
+    // Contract Token name
+    string internal constant _name = 'eFIAT AssetAccountant';
+
     bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -103,6 +106,13 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         }
     }
 
+    /**
+     * @dev Returns _name.
+     */
+    function name() public pure returns (string memory) {
+        return _name;
+    }
+
     function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
         _setURI(newuri);
     }
@@ -135,6 +145,26 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         uint256[] memory values
     ) public onlyRole(BURNER_ROLE) {
         _burnBatch(account, ids, values);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes calldata data
+    ) public pure override {
+        revert("Non-transferable!");
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) public pure override {
+        revert("Non-transferable!");
     }
 
     // The following functions are overrides required by Solidity.

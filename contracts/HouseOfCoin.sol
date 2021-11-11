@@ -27,7 +27,7 @@ contract HouseOfCoinState {
 }
 
 contract HouseOfCoin is Initializable, HouseOfCoinState {
-
+    
     // HouseOfCoinMinting Events
     event CoinMinted(address indexed user, address backedAsset, uint amount, address indexed reserveAsset);
 
@@ -66,7 +66,6 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
              "Not enough reserves to mint amount!"
         );
 
-
         // Mint at AssetAccountant
         IAssetsAccountant(assetsAccountant).mint(
             msg.sender,
@@ -87,25 +86,25 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     }
 
     function _checkMintingPower(IHouseOfReserveState hOfReserve, address reserveAsset) internal view returns(uint) {
-        // Need tokenIDs of botch reserves and backedAsset {AssetsAccountant}
+        // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
         (uint reserveBal, uint mintedCoinBal) =  _checkBalances(
-            hOfReserve.tokenID(),
+            hOfReserve.reserveTokenID(),
             _getTokenID(reserveAsset)
         );
 
         // Check if msg.sender has reserves
         if (reserveBal == 0) {
+            // If msg.sender has NO reserves, minting power = 0.
             return 0;
         } else {
-
             // Check that user is not Liquidatable
             (bool liquidatable, uint mintingPower) = _checkIfLiquidatable(
                 reserveBal,
                 mintedCoinBal,
                 hOfReserve
             );
-
             if(liquidatable) {
+                // If msg.sender is liquidatable, minting power = 0.
                 return 0;
             } else {
                 return mintingPower;
@@ -123,7 +122,7 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
         uint price = oracle.getLastPrice();
 
         // Get collateralization ratio
-        IHouseOfReserveState.Factor memory collatRatio = hOfReserve.collaterizationRatio();
+        IHouseOfReserveState.Factor memory collatRatio = hOfReserve.collatRatio();
 
         uint reserveBalreducedByFactor =
             ( reserveBal * collatRatio.denominator) / collatRatio.numerator;
@@ -137,25 +136,15 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     }
 
     function _getTokenID(address _reserveAsset) internal view returns(uint) {
-        return uint(keccak256(abi.encodePacked(backedAsset, _reserveAsset, "backedAsset")));
+        return uint(keccak256(abi.encodePacked(_reserveAsset, backedAsset, "backedAsset")));
     }
 
     function _checkBalances(
         uint _reservesTokenID,
         uint _bAssetRTokenID
     ) internal view returns (uint reserveBal, uint mintedCoinBal) {
-
-        uint[] memory ids = new uint[](2);
-        ids[0] = _reservesTokenID;
-        ids[1] = _bAssetRTokenID;
-        address[] memory accounts = new address[](2);
-        accounts[0] = msg.sender;
-        accounts[1] = msg.sender;
-
-        uint[] memory balances = IERC1155(assetsAccountant).balanceOfBatch(accounts, ids);
-
-        reserveBal = balances[0];
-        mintedCoinBal = balances[1];
+        reserveBal = IERC1155(assetsAccountant).balanceOf(msg.sender, _reservesTokenID);
+        mintedCoinBal = IERC1155(assetsAccountant).balanceOf(msg.sender, _bAssetRTokenID);
     }
 
 }
