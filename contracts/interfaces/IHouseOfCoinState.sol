@@ -2,12 +2,7 @@
 pragma solidity 0.8.2;
 
 interface IHouseOfCoinState {
-
-    struct Factor{
-        uint numerator;
-        uint denominator;
-    }
-
+    
     /**
     * @dev Returns the type of House Contract.
     */

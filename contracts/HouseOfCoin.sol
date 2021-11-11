@@ -19,11 +19,6 @@ contract HouseOfCoinState {
 
     bytes32 public constant HOUSE_TYPE = keccak256("COIN_HOUSE");
 
-    struct Factor{
-        uint numerator;
-        uint denominator;
-    }
-
     address public backedAsset;
 
     address public assetsAccountant;
@@ -128,7 +123,7 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
         uint price = oracle.getLastPrice();
 
         // Get collateralization ratio
-        Factor memory collatRatio = hOfReserve.collaterizationRatio();
+        IHouseOfReserveState.Factor memory collatRatio = hOfReserve.collaterizationRatio();
 
         uint reserveBalreducedByFactor =
             ( reserveBal * collatRatio.denominator) / collatRatio.numerator;
@@ -157,7 +152,7 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
         accounts[0] = msg.sender;
         accounts[1] = msg.sender;
 
-        uint balances = IERC1155(assetsAccountant).balanceOfBatch(accounts, ids);
+        uint[] memory balances = IERC1155(assetsAccountant).balanceOfBatch(accounts, ids);
 
         reserveBal = balances[0];
         mintedCoinBal = balances[1];

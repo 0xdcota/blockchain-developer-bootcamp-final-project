@@ -73,10 +73,10 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     require(amount>0, "Zero input amount!");
 
     // Check ERC20 approval of msg.sender.
-    require(IERC20(reserveAsset).allowance(msg.sender, address.this) >= amount, "Not enough ERC20 allowance!");
+    require(IERC20(reserveAsset).allowance(msg.sender, address(this)) >= amount, "Not enough ERC20 allowance!");
 
     // Transfer reserveAsset amount to this contract.
-    IERC20(reserveAsset).transferFrom(msg.sender, address.this, amount);
+    IERC20(reserveAsset).transferFrom(msg.sender, address(this), amount);
 
     // Mint in AssetsAccountant received amount.
     assetsAccountant.mint(msg.sender, tokenID, amount, "");
@@ -85,7 +85,7 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     emit UserDeposit(msg.sender, reserveAsset, amount);
   }
 
-  function withdraw(uint amount) public returns(bool) {
+  function withdraw(uint amount) public view returns(bool) {
     // Validate input amount.
     require(
       amount > 0 && 
