@@ -15,13 +15,13 @@ contract MockOracleState{
 
 }
 
-contract MockOracleMethods is Ownable, MockOracleState {
+contract MockOracle is Ownable, MockOracleState {
 
     constructor (
-        string memory _tackingassetSymbol,
+        string memory _trackingassetSymbol,
         uint _oraclePriceDecimals
     ) {
-        trackingAssetSymbol = _tackingassetSymbol;
+        trackingAssetSymbol = _trackingassetSymbol;
         oraclePriceDecimals = _oraclePriceDecimals;
     }
 

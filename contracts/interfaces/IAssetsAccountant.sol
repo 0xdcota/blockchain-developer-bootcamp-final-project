@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-interface IAssetsAccountant {
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
+interface IAssetsAccountant is IERC1155 {
     
     /**
      * @dev Registers a HouseOfReserve or HouseOfCoinMinting contract address in AssetsAccountant.

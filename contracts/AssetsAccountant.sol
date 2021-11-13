@@ -39,7 +39,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
     */
     event HouseRegistered(address house, bytes32 indexed typeOfHouse, address indexed asset);
 
-    constructor() ERC1155("") {
+    constructor() ERC1155("http://efiat.world/token-ids/") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(URI_SETTER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);

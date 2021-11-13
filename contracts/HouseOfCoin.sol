@@ -84,7 +84,7 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
 
     function paybackCoin(uint _backedTokenID, uint amount) public {
 
-        IERC1155 accountant = IERC1155(assetsAccountant);
+        IAssetsAccountant accountant = IAssetsAccountant(assetsAccountant);
         IERC20Extension bAsset = IERC20Extension(backedAsset);
 
         uint userTokenIDBal = accountant.balanceOf(msg.sender, _backedTokenID);
