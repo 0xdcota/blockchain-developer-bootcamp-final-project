@@ -7,7 +7,6 @@ pragma solidity 0.8.2;
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import "./interfaces/IERC20Extension.sol";
 import "./interfaces/IOracle.sol";
@@ -30,6 +29,8 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     
     // HouseOfCoinMinting Events
     event CoinMinted(address indexed user, address backedAsset, uint amount, address indexed reserveAsset);
+
+    event CoinPayback(address indexed user, address backedAsset, uint amount);
 
 
     function initialize(
@@ -81,8 +82,29 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
         emit CoinMinted(msg.sender, backedAsset, amount, reserveAsset);
     }
 
-    function burnCoin() public {
+    function paybackCoin(uint _backedTokenID, uint amount) public {
 
+        IERC1155 accountant = IERC1155(assetsAccountant);
+        IERC20Extension bAsset = IERC20Extension(backedAsset);
+
+        uint userTokenIDBal = accountant.balanceOf(msg.sender, _backedTokenID);
+
+        // Check in {AssetsAccountant} that msg.sender backedAsset was created with assets '_backedTokenID'
+        require(userTokenIDBal >= 0, "No _backedTokenID balance!");
+
+        // Check that amount is less than '_backedTokenID' in {Assetsaccountant}
+        require(userTokenIDBal >= amount, "amount >  _backedTokenID balance!");
+
+        // Check that msg.sender has the intended backed ERC20 asset.
+        require(bAsset.balanceOf(msg.sender) >= amount, "No ERC20 allowance!");
+
+        // Burn amount of ERC20 tokens paybacked.
+        bAsset.burn(msg.sender, amount);
+
+        // Burn amount of _backedTokenID in {AssetsAccountant}
+        accountant.burn(msg.sender, _backedTokenID, amount);
+
+        emit CoinPayback(msg.sender, backedAsset, amount);
     }
 
     function _checkMintingPower(IHouseOfReserveState hOfReserve, address reserveAsset) internal view returns(uint) {
