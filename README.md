@@ -13,8 +13,8 @@ One of the barriers for a creating a digital cryptocurrency  that represents a L
 This project uses Node.js, TruffleSuite, and Satic-Server, and will be needed to test the application. 
 
 Pre-requisites:
-• Install globally [Static-server](https://yarnpkg.com/package/static-server). `npm install -g ganache-cli`
-• Install globally [Ganache-cli](https://github.com/trufflesuite/ganache-cli-archive) `npm -g install static-server`
+- Install globally [Static-server](https://yarnpkg.com/package/static-server). `npm install -g ganache-cli`
+- Install globally [Ganache-cli](https://github.com/trufflesuite/ganache-cli-archive) `npm -g install static-server`
 
 Copy repository: `git clone https://github.com/DaigaroCota/blockchain-developer-bootcamp-final-project`
 
@@ -24,8 +24,8 @@ Install dependencies:` yarn install`
 
 To test application in a local environment, you will need three terminals:
 
-• On one terminal run the web host server: `yarn server`
-• On another terminal run the development blockchain:  `yarn ganache`
-• On the remaining terminal run: `yarn deploy`
+- On one terminal run the web host server: `yarn server`
+- On another terminal run the development blockchain:  `yarn ganache`
+- On the remaining terminal run: `yarn deploy`
 
 Open a browser and go to: `http://localhost:9080/`
