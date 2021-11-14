@@ -6,5 +6,5 @@ contract HouseLiquidatorState{
 }
 
 contract HouseLiquidator is HouseLiquidatorState {
-
+    // To be implemented
 }

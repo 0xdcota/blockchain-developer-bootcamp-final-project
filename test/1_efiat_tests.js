@@ -8,24 +8,30 @@ const MockWETH = artifacts.require("MockWETH");
 const DEPOSIT_AMOUNT = web3.utils.toBN(web3.utils.toWei("0.5", "ether"));
 const WITHDRAW_AMOUNT = web3.utils.toBN(web3.utils.toWei("0.25", "ether"));
 
+const {
+    takeSnapshot,
+    revertToSnapShot
+} = require("./helpers.js");
+
+// start a ganacha-cli by running: < ganache-cli -d >
+
 describe('efiat Sytem Tests', function () {
     this.timeout(0)
 
     // Global variables
     let accounts;
-    let USER;;
     let accountant;
     let coinhouse;
     let reservehouse;
     let mockoracle;
     let fiat;
     let mockweth;
+    let snapshotId;
 
     before(async () => {
 
         // Pre-staging
         accounts = await web3.eth.getAccounts();
-        USER = accounts[1];
         accountant = await AssetsAccountant.deployed();
         coinhouse = await HouseOfCoin.deployed();
         reservehouse = await HouseOfReserve.deployed();
@@ -33,12 +39,15 @@ describe('efiat Sytem Tests', function () {
         fiat = await DigitalFiat.deployed();
         mockweth = await MockWETH.deployed();
         
-        // Load accounts[0] with mockweth
-        await mockweth.deposit(
-            {
-                from: USER,
-                value: web3.utils.toWei("20", "ether")
-            });
+        // Load first 5 accounts with mockweth
+        for(let i =0; i < 5; i++) {
+            await mockweth.deposit(
+                {
+                    from: accounts[i],
+                    value: web3.utils.toWei("20", "ether")
+                });
+        }
+
 
         // Mock Oracle Price setting
         await mockoracle.setPrice(web3.utils.toWei("90500", "ether"));
@@ -69,18 +78,26 @@ describe('efiat Sytem Tests', function () {
         const burner = await fiat.BURNER_ROLE();
         await fiat.grantRole(minter, coinhouse.address);
         await fiat.grantRole(burner, coinhouse.address);
+
+        snapshotId = takeSnapshot();
     });
 
     // Test cases
     contract('HouseOfReserve', async() => {
 
+        afterEach(async () => {
+            // Revert back to snapshotID
+            revertToSnapShot(snapshotId);
+          });
+
         it("Should deposit and balance match in AssetsAccountant", async () => {
+            let user = accounts[1];
             // ERC20 Allowance
             await mockweth.approve(
                 reservehouse.address,
                 DEPOSIT_AMOUNT,
                 {
-                    from: USER
+                    from: user
                 }
             );
 
@@ -88,18 +105,57 @@ describe('efiat Sytem Tests', function () {
             await reservehouse.deposit(
                 DEPOSIT_AMOUNT,
                 {
-                    from: USER
+                    from: user
                 }
             );
 
             // Get minted balance in accountant
             const id = await reservehouse.reserveTokenID();
-            const balanceAtAccountant = await accountant.balanceOf(USER,id);
+            const balanceAtAccountant = await accountant.balanceOf(user,id);
 
             // Final Assert
             assert(
                 balanceAtAccountant.eq(DEPOSIT_AMOUNT),
                 "balance and DEPOSIT_AMOUNT don't match!" 
+            );
+        });
+
+        it("Should deposit and withdraw and balance in AssetsAccountant should match difference", async () => {
+            let user = accounts[2];
+            // ERC20 Allowance
+            await mockweth.approve(
+                reservehouse.address,
+                DEPOSIT_AMOUNT,
+                {
+                    from: user
+                }
+            );
+
+            // Do deposit
+            await reservehouse.deposit(
+                DEPOSIT_AMOUNT,
+                {
+                    from: user
+                }
+            );
+
+            // Do withdraw
+            await reservehouse.withdraw(
+                WITHDRAW_AMOUNT,
+                {
+                    from: user
+                }
+            );
+
+            // Get minted balance in accountant
+            const id = await reservehouse.reserveTokenID();
+            const balanceAtAccountant = await accountant.balanceOf(user,id);
+            const difference = DEPOSIT_AMOUNT.sub(WITHDRAW_AMOUNT);
+
+            // Final Assert
+            assert(
+                balanceAtAccountant.eq(difference),
+                "balanceAtAccountant and computedAmount don't match!" 
             );
         });
 

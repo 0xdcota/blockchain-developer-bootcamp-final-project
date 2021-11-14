@@ -5,5 +5,10 @@
     "ethers": "^5.5.1",
     "redstone-flash-storage": "^1.3.2",
     "static-server": "^2.2.1"
+  },
+  "scripts": {
+    "ganache": "ganache-cli -d",
+    "server" : "static-server",
+    "deploy" : "truffle migrate"
   }
 }
