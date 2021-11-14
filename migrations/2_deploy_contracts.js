@@ -21,3 +21,13 @@ module.exports = async function (deployer) {
 // let oracle = await MockOracle.deployed();
 // let fiat = await DigitalFiat.deployed();
 // let weth = await MockWETH.deployed();
+
+// PRE-STAGING
+// await weth.deposit({value: 20e18});
+// await oracle.setPrice(9.560000999999999e+22);
+
+// SET_UP
+// let minter = await fiat.MINTER_ROLE();
+// await fiat.grantRole(minter, coinhouse.address);
+// await coinhouse.initialize(fiat.address, accountant.address, oracle.address);
+

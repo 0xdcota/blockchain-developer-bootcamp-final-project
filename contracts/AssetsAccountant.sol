@@ -11,8 +11,8 @@ import "./interfaces/IHouseOfCoinState.sol";
 
 contract AssetsAccountantState {
 
-    // reserveAsset address => houseOfReserve 
-    mapping(address => address) public houseOfReserves;
+    // reserveAssetTokenID => houseOfReserve 
+    mapping(uint => address) public houseOfReserves;
 
     // backedAsset address => houseOfCoin
     mapping(address => address) public houseOfCoins;
@@ -58,9 +58,10 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         if(IHouseOfReserveState(houseAddress).HOUSE_TYPE() == keccak256("RESERVE_HOUSE")) {
 
             IHouseOfReserveState hOfReserve = IHouseOfReserveState(houseAddress);
+            uint reserveTokenID = hOfReserve.reserveTokenID();
 
             // Check that asset has NOT a house address assigned
-            require(houseOfReserves[asset] != address(0), "ReserveAsset already registered!");
+            require(houseOfReserves[reserveTokenID] == address(0), "ReserveAsset already registered!");
 
             // Check intended asset matches House
             require(
@@ -69,7 +70,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
             );
 
             // Register mappings
-            houseOfReserves[asset] = houseAddress;
+            houseOfReserves[reserveTokenID] = houseAddress;
             _isARegisteredHouse[houseAddress] = true;
 
             // Assign Roles
@@ -83,7 +84,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
             IHouseOfCoinState hOfCoin = IHouseOfCoinState(houseAddress);
 
             // Check that asset has NOT a house address assigned
-            require(houseOfCoins[asset] != address(0), "backedAsset already registered!");
+            require(houseOfCoins[asset] == address(0), "backedAsset already registered!");
 
             // Check intended asset matches House
             require(
@@ -154,6 +155,11 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         uint256 amount,
         bytes calldata data
     ) public pure override {
+        from;
+        to;
+        id;
+        amount;
+        data;
         revert("Non-transferable!");
     }
 
@@ -164,6 +170,11 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         uint256[] calldata amounts,
         bytes calldata data
     ) public pure override {
+        from;
+        to;
+        ids;
+        amounts;
+        data;
         revert("Non-transferable!");
     }
 
