@@ -10,13 +10,13 @@ Among the reasons, is that no popular and widely accepted representation of a st
 One of the barriers for a creating a digital cryptocurrency  that represents a Latam currency is the lack of price oracle feeds for these currencies. For this project, in coordination with [Redstone Finance](https://redstone.finance/), some Latam currency prices were made available. 
 
 ## Set up
-This project uses Node.js, TruffleSuite, and Satic-Server, and will be needed to test the application. 
+This project uses Node.js, TruffleSuite, Satic-Server, and Metamask browser wallet will be needed to test the application. 
 
 Pre-requisites:
 - Install globally [Static-server](https://yarnpkg.com/package/static-server). `npm install -g ganache-cli`
 - Install globally [Ganache-cli](https://github.com/trufflesuite/ganache-cli-archive) `npm -g install static-server`
 
-Copy repository: `git clone https://github.com/DaigaroCota/blockchain-developer-bootcamp-final-project`
+Copy repository: `git clone https://github.com/<this repository>`
 
 User your preferred package manager, the commands in this instruction assume Yarn.
 
