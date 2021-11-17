@@ -6,7 +6,7 @@ interface IAssetsAccountantState {
     /**
      * @dev Returns the address of the HouseOfReserve corresponding to reserveAsset.
      */
-    function houseOfReserves(address reserveAsset) external view returns(address);
+    function houseOfReserves(uint reserveAssetTokenID) external view returns(address);
 
     /**
      * @dev Returns the address of the HouseOfCoin corresponding to backedAsset.

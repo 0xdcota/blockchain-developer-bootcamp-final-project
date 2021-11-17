@@ -49,9 +49,11 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
         IHouseOfReserveState hOfReserve = IHouseOfReserveState(houseOfReserve);
         IERC20Extension bAsset = IERC20Extension(backedAsset);
 
+        uint reserveTokenID = hOfReserve.reserveTokenID();
+
         // Validate reserveAsset and houseOfReserve inputs.
         require(
-            IAssetsAccountantState(assetsAccountant).houseOfReserves(reserveAsset) != address(0) &&
+            IAssetsAccountantState(assetsAccountant).houseOfReserves(reserveTokenID) != address(0) &&
             hOfReserve.reserveAsset() == reserveAsset,
             "Not valid reserveAsset!"
         );
