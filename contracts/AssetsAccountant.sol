@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-// The AssetsAccountant keeps records of all deposits, withdrawals, and minted assets by user.
+/**
+* @title Assets accountant contract.
+* @author daigaro.eth
+* @notice Keeps records of all deposits, withdrawals, and minted assets by users using ERC1155 tokens.
+* @dev Contracts are split into state and functionality.
+* @dev At time of deployment, deployer is DEFAULT_ADMIN, however, this role should be transferred to a governance system. 
+*/
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-
 import "./interfaces/IHouseOfReserveState.sol";
 import "./interfaces/IHouseOfCoinState.sol";
 
@@ -34,8 +39,11 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
 
     // AssetsAccountant Events
 
-    /* 
-    * Emit when a HouseOfReserve is registered with AssetsAccountant
+    /**  
+    * @dev Emit when a HouseOfReserve is registered with AssetsAccountant
+    * @param house Address of house registered.
+    * @param typeOfHouse Either HouseOfReserve or HouseOfCoin.
+    * @param asset ERC20 address of either reserve asset or backed asset.
     */
     event HouseRegistered(address house, bytes32 indexed typeOfHouse, address indexed asset);
 
@@ -46,6 +54,12 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         _setupRole(BURNER_ROLE, msg.sender);
     }
 
+    /**  
+    * @dev Register a house address in this contract.
+    * @dev Requires caller to have DEFAULT_ADMIN_ROLE.
+    * @param houseAddress Address of house registered.
+    * @param asset ERC20 address of either reserve asset or backed asset.
+    */
     function registerHouse(address houseAddress, address asset) 
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -114,10 +128,24 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         return _name;
     }
 
+    /**  
+    * @dev Sets the URI for this contract.
+    * @dev Requires caller to have URI_SETTER_ROLE.
+    * @dev Since URI is not specified per Token Id this function does not emit {URI} event.
+    * @param newuri String of the new URI.
+    */
     function setURI(string memory newuri) public onlyRole(URI_SETTER_ROLE) {
         _setURI(newuri);
     }
 
+    /**  
+    * @notice Mints 'amount' of token Id for specified 'account' address.
+    * @dev Requires caller to have MINTER_ROLE.
+    * @param account User address
+    * @param id Token Id
+    * @param amount to mint
+    * @param data Not use in this implementation, pass empty string "".
+    */
     function mint(address account, uint256 id, uint256 amount, bytes memory data)
         external
         onlyRole(MINTER_ROLE)
@@ -125,6 +153,9 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         _mint(account, id, amount, data);
     }
 
+    /**
+    * @dev Batch implementation of {mint} function. Refer to {mint}.
+    */
     function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
         external
         onlyRole(MINTER_ROLE)
@@ -132,22 +163,36 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         _mintBatch(to, ids, amounts, data);
     }
 
+    /**  
+    * @notice Burns 'amount' of token Id for specified 'account' address.
+    * @dev Requires caller to have BURNER_ROLE.
+    * @param account User address
+    * @param id Token Id
+    * @param amount to burn
+    */
     function burn(
         address account,
         uint256 id,
-        uint256 value
+        uint256 amount
     ) public onlyRole(BURNER_ROLE) {
-        _burn(account, id, value);
+        _burn(account, id, amount);
     }
 
+    /**
+    * @dev Batch implementation of {burn} function. Refer to {burn}.
+    */
     function burnBatch(
         address account,
         uint256[] memory ids,
-        uint256[] memory values
+        uint256[] memory amounts
     ) public onlyRole(BURNER_ROLE) {
-        _burnBatch(account, ids, values);
+        _burnBatch(account, ids, amounts);
     }
 
+    /**
+    * @dev Function override added to restrict transferability of tokens in this contract.
+    * @dev Accounting assets are not meant to be transferable. 
+    */
     function safeTransferFrom(
         address from,
         address to,
@@ -163,6 +208,9 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         revert("Non-transferable!");
     }
 
+    /**
+    * @dev See {safeTransferFrom}.
+    */
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -178,8 +226,9 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
         revert("Non-transferable!");
     }
 
-    // The following functions are overrides required by Solidity.
-
+    /**
+    * @dev Function override required by Solidity.
+    */
     function supportsInterface(bytes4 interfaceId)
         public
         view

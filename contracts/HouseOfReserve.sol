@@ -1,25 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.2;
 
-// The HouseOfReserve contract custodies all deposits, to allow minting of the backedAsset. 
-// Users can only deposit and withdraw from this contract.
+/**
+* @title The house of reserves contract.
+* @author daigaro.eth
+* @notice Custodies all deposits, to allow minting of the backedAsset.
+* @notice Users can only deposit and withdraw from this contract.
+* @dev  Contracts are split into state and functionality.
+* @dev A HouseOfReserve is required to back a specific backedAsset. 
+*/
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 import "./interfaces/IAssetsAccountant.sol";
 import "./interfaces/IOracle.sol";
 
 contract HouseOfReserveState {
 
   // HouseOfReserve Events
-  /* 
-  * @dev Emit when user makes an asset deposit in this HouseOfReserve
+
+  /**  
+  * @dev Emit when user makes an asset deposit in this contract.
+  * @param user Address of depositor.
+  * @param asset ERC20 address of the reserve asset.
+  * @param amount deposited.
   */
   event UserDeposit(address indexed user, address indexed asset, uint amount);
-  /* 
+  /**  
   * @dev Emit when user makes an asset withdrawal from this HouseOfReserve
+  * @param user Address of user withdrawing.
+  * @param asset ERC20 address of the reserve asset.
+  * @param amount withraw.
   */
   event UserWithdraw(address indexed user, address indexed asset, uint amount);
 
@@ -55,6 +67,13 @@ contract HouseOfReserveState {
 
 contract HouseOfReserve is Initializable, HouseOfReserveState {
 
+    /**
+   * @dev Initializes this contract by setting:
+   * @param _reserveAsset ERC20 address of reserve asset handled in this contract.
+   * @param _backedAsset ERC20 address of the asset type of coin that can be backed with this reserves.
+   * @param _assetsAccountant Address of the {AssetsAccountant} contract.
+   * @param _oracle Address of the oracle that will return price in _backedAsset units per reserve asset units.
+   */
   function initialize(
     address _reserveAsset,
     address _backedAsset,
@@ -73,6 +92,13 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
 
   }
 
+  /**
+   * @notice Function to deposit reserves in this contract.
+   * @notice DO NOT!! send direct ERC20 transfers to this contract.
+   * @dev Requires user's ERC20 approval prior to calling.
+   * @param amount To deposit. 
+   * Emits a {UserDeposit} event.
+   */
   function deposit(uint amount) public {
     // Validate input amount.
     require(amount>0, "Zero input amount!");
@@ -90,6 +116,12 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     emit UserDeposit(msg.sender, reserveAsset, amount);
   }
 
+  /**
+   * @notice Function to withdraw reserves in this contract.
+   * @dev Function checks if user can withdraw specified amount.
+   * @param amount To withdraw. 
+   * Emits a {UserWitdhraw} event.
+   */
   function withdraw(uint amount) public {
     // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
     (uint reserveBal, uint mintedCoinBal) =  _checkBalances(reserveTokenID, backedTokenID);
@@ -118,16 +150,13 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     // Transfer Asset to msg.sender
     IERC20(reserveAsset).transfer(msg.sender, amount);
 
+    // Emit withdraw event.
+    emit UserWithdraw(msg.sender, reserveAsset, amount);
   }
 
-  function _checkBalances(
-      uint _reservesTokenID,
-      uint _bAssetRTokenID
-  ) internal view returns (uint reserveBal, uint mintedCoinBal) {
-      reserveBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _reservesTokenID);
-      mintedCoinBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _bAssetRTokenID);
-  }
-
+  /**
+   * @dev  Internal function to check max withdrawal amount.
+   */
   function _checkMaxWithdrawal(uint _reserveBal, uint _mintedCoinBal) internal view returns(uint) {
     // Get price
     // Price should be: backedAsset per unit of reserveAsset {backedAsset / reserveAsset}
@@ -155,5 +184,16 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
       // Return _reserveBal if msg.sender has no minted coin.
       return _reserveBal;
     }
+  }
+
+  /**
+   * @dev  Internal function to query balances in {AssetsAccountant}
+   */
+  function _checkBalances(
+      uint _reservesTokenID,
+      uint _bAssetRTokenID
+  ) internal view returns (uint reserveBal, uint mintedCoinBal) {
+      reserveBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _reservesTokenID);
+      mintedCoinBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _bAssetRTokenID);
   }
 }

@@ -2,7 +2,7 @@
 pragma solidity 0.8.2;
 
 contract HouseLiquidatorState{
-
+    // To be implemented
 }
 
 contract HouseLiquidator is HouseLiquidatorState {

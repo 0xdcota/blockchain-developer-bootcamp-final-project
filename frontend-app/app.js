@@ -1,4 +1,5 @@
 const forwarderOrigin = 'http://localhost:9010'
+// const { WrapperBuilder } = require("redstone-flash-storage");
 
 //Elements of the Website
 // Buttons
@@ -134,6 +135,9 @@ const approveERC20 = async () => {
 const depositReserve = async (amount) => {
   let depositTx = await reservehouse.deposit(amount);
   console.log('deposit TxHash', depositTx);
+  let receipt = await depositTx.wait();
+  console.log("receipt", receipt);
+  getAllUpdateView();
 }
 
 const withdrawReserve = async () => {
@@ -152,6 +156,9 @@ const withdrawReserve = async () => {
     } else {
       let withdrawTx = await reservehouse.withdraw(inputValBN)
       console.log('withdraw TxHash', withdrawTx);
+      let receipt = await withdrawTx.wait();
+      console.log("receipt", receipt);
+      getAllUpdateView();
     } 
   }   
 }
@@ -175,6 +182,9 @@ const mintEfiat = async () => {
         inputValBN
       )
       console.log('mintCoin TxHash', mintTx);
+      let receipt = await mintTx.wait();
+      console.log("receipt", receipt);
+      getAllUpdateView();
     }
   }
 }
@@ -186,12 +196,14 @@ const paybackEfiat = async () => {
   } else {
     let inputValBN = ethers.BigNumber.from(inputVal);
     let tokenID = await reservehouse.backedTokenID();
-    console.log(tokenID,inputValBN);
     let paybackTx = await coinhouse.paybackCoin(
       tokenID,
       inputValBN
     )
     console.log('paybackCoin TxHash', paybackTx);
+    let receipt = await paybackTx.wait();
+    console.log("receipt", receipt);
+    getAllUpdateView();
   }
 }
 

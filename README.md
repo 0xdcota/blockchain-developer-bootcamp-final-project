@@ -1,6 +1,7 @@
 # Efiat.world - digital currencies system
 ### Consensys Blockchain Developer Project
 November 7, 2021
+Author: daigaro.eth
 
 ### Electronic currencies for smaller economies
 Although cryptocurrencies of many types already exist, there is fairly a low adoption in developing countries. This project will focus on Latin America (Latam).
@@ -18,7 +19,7 @@ Pre-requisites:
 
 Copy repository: `git clone https://github.com/<this repository>`
 
-User your preferred package manager, the commands in this instruction assume Yarn.
+This project was developed using Yarn as the package manager.
 
 Install dependencies:` yarn install`
 
@@ -29,3 +30,5 @@ To test application in a local environment, you will need three terminals:
 - On the remaining terminal run: `yarn deploy`
 
 Open a browser and go to: `http://localhost:9080/`
+
+NOTE! Clear browser cache memory (CTRL+SHIT+R) to test changes in ./frontend-app/app.js, then reload `http://localhost:9080/` with (F5)

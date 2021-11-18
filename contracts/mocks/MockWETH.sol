@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GNU
 pragma solidity 0.8.2;
 
+/**
+* @title Mock WETH contract used for testing.
+*/
+
 contract MockWETH {
     string public name     = "Wrapped Ether";
     string public symbol   = "WETH";
