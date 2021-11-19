@@ -90,6 +90,7 @@ const getDepositReservesBalance = async () => {
   let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
   reserveBal = reserveBal/1e18;
   yourReserves.innerHTML = reserveBal.toFixed(4);
+  return reserveBal;
 }
 
 const geteFiatBalance = async () => {
@@ -105,87 +106,125 @@ const getMintefiatBalance = async () => {
   yourMinted.innerHTML = mintedBal.toFixed(2);
 }
 
+const getMintPower = async () => {
+  let power  = await coinhouse.checkMintingPower(
+    accounts[0],
+    reservehouse.address,
+    mockweth.address
+    )
+    power = power/1e18;
+    mintPower.innerHTML = power.toFixed(2);
+}
+
+const getLockedReserves = async () => {
+  let max = await reservehouse.checkMaxWithdrawal(accounts[0]);
+  max = max/1e18;
+  let reserve = await getDepositReservesBalance();
+  let locked = reserve - max;
+  lockedReserves.innerHTML = locked.toFixed(6);
+}
+
 const getAllUpdateView = async () => {
   getNativeBalance();
   getMockWETHBalance();
   getDepositReservesBalance();
   geteFiatBalance();
   getMintefiatBalance();
+  getMintPower();
+  getLockedReserves();
   onboardButton.innerText = 'Refresh Balances';
 }
 
 // Interaction Functions
 
 const approveERC20 = async () => {
-  // Check and read Inputvalue
-  let inputVal = document.getElementById("wethDepositInput").value;
-  let mockWETHbal = await mockweth.balanceOf(accounts[0]);
-  if(!inputVal) {
-    alert("enter deposit amount value!");
-  } else {
-    let approvaltx = await mockweth.approve(
-      reservehouse.address,
-      inputVal
-    );
-    console.log('approval TxHash', approvaltx);
-    await depositReserve(inputVal);
+  try {
+    // Check and read Inputvalue
+    let inputVal = document.getElementById("wethDepositInput").value;
+    let mockWETHbal = await mockweth.balanceOf(accounts[0]);
+    if(!inputVal) {
+      alert("enter deposit amount value!");
+    } else {
+      let approvaltx = await mockweth.approve(
+        reservehouse.address,
+        inputVal
+      );
+      console.log('approval TxHash', approvaltx);
+      await depositReserve(inputVal);
+    }
+  } catch (error) {
+    alert('ERC20 Approval Failed!', error);
   }
 }
 
 const depositReserve = async (amount) => {
-  let depositTx = await reservehouse.deposit(amount);
-  console.log('deposit TxHash', depositTx);
-  let receipt = await depositTx.wait();
-  console.log("receipt", receipt);
-  getAllUpdateView();
+  try {
+    let depositTx = await reservehouse.deposit(amount);
+    console.log('deposit TxHash', depositTx);
+    let receipt = await depositTx.wait();
+    console.log("receipt", receipt);
+    await getAllUpdateView();
+    alert('Successful Transaction!');
+  } catch (error) {
+    alert('Deposit Failed!', error);
+  }
 }
 
 const withdrawReserve = async () => {
-  // Check and read Inputvalue
-  let inputVal = document.getElementById("wethWithdrawInput").value;
-  let tokenID = await reservehouse.reserveTokenID();
-  let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
-  let inputValBN;
-
-  if (!inputVal) {
-    alert("enter withdraw amount value!");
-  } else {
-    inputValBN = ethers.BigNumber.from(inputVal);
-    if (inputValBN.gt(reserveBal)) {
-      alert("cannot withdraw more that reserves!");
+  try {
+    // Check and read Inputvalue
+    let inputVal = document.getElementById("wethWithdrawInput").value;
+    let tokenID = await reservehouse.reserveTokenID();
+    let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
+    let inputValBN;
+    if (!inputVal) {
+      alert("enter withdraw amount value!");
     } else {
-      let withdrawTx = await reservehouse.withdraw(inputValBN)
-      console.log('withdraw TxHash', withdrawTx);
-      let receipt = await withdrawTx.wait();
-      console.log("receipt", receipt);
-      getAllUpdateView();
+      inputValBN = ethers.BigNumber.from(inputVal);
+      if (inputValBN.gt(reserveBal)) {
+        alert("cannot withdraw more that reserves!");
+      } else {
+        let withdrawTx = await reservehouse.withdraw(inputValBN)
+        console.log('withdraw TxHash', withdrawTx);
+        let receipt = await withdrawTx.wait();
+        console.log("receipt", receipt);
+        await getAllUpdateView();
+        alert('Successful Transaction!');
+      } 
     } 
-  }   
+  } catch (error) {
+    alert('Withdraw Failed!'+error.data.message);
+  }  
 }
 
 const mintEfiat = async () => {
-  let inputVal = document.getElementById("efiatMintInput").value;
-  let reserveAddress = document.getElementById("reserveAddrToUse").value;
-  if(!inputVal) {
-    alert("enter amount value!");
-  } else {
-    if (!reserveAddress) {
-      alert("enter address value!");
+  try {
+    let inputVal = document.getElementById("efiatMintInput").value;
+    let reserveAddress = document.getElementById("reserveAddrToUse").value;
+    if(!inputVal) {
+      alert("enter amount value!");
     } else {
-      let inputValBN = ethers.BigNumber.from(inputVal);
-      let tokenID = await reservehouse.reserveTokenID();
-      let hOfReserve = await accountant.houseOfReserves(tokenID);
-      console.log(reserveAddress,hOfReserve,inputValBN);
-      let mintTx = await coinhouse.mintCoin(
-        reserveAddress,
-        hOfReserve,
-        inputValBN
-      )
-      console.log('mintCoin TxHash', mintTx);
-      let receipt = await mintTx.wait();
-      console.log("receipt", receipt);
-      getAllUpdateView();
+      if (!reserveAddress) {
+        alert("enter address value!");
+      } else {
+        let inputValBN = ethers.BigNumber.from(inputVal);
+        let tokenID = await reservehouse.reserveTokenID();
+        let hOfReserve = await accountant.houseOfReserves(tokenID);
+        console.log(reserveAddress,hOfReserve,inputValBN);
+        let mintTx = await coinhouse.mintCoin(
+          reserveAddress,
+          hOfReserve,
+          inputValBN
+        )
+        console.log('mintCoin TxHash', mintTx);
+        let receipt = await mintTx.wait();
+        console.log("receipt", receipt);
+        await getAllUpdateView();
+        alert('Successful Transaction!');
+      }
     }
+  } catch (error) {
+    alert('Mint Failed!'+error.data.message);
   }
 }
 
@@ -194,16 +233,22 @@ const paybackEfiat = async () => {
   if(!inputVal) {
     alert("enter amount value!");
   } else {
-    let inputValBN = ethers.BigNumber.from(inputVal);
-    let tokenID = await reservehouse.backedTokenID();
-    let paybackTx = await coinhouse.paybackCoin(
-      tokenID,
-      inputValBN
-    )
-    console.log('paybackCoin TxHash', paybackTx);
-    let receipt = await paybackTx.wait();
-    console.log("receipt", receipt);
-    getAllUpdateView();
+    try {
+      let inputValBN = ethers.BigNumber.from(inputVal);
+      let tokenID = await reservehouse.backedTokenID();
+      let paybackTx = await coinhouse.paybackCoin(
+        tokenID,
+        inputValBN
+      )
+      console.log('paybackCoin TxHash', paybackTx);
+      let receipt = await paybackTx.wait();
+      console.log("receipt", receipt);
+      await getAllUpdateView();
+      alert("Succesful Transaction!");
+    } catch (error) {
+      alert("Payback Failed!"+error.data.message);
+    }
+
   }
 }
 

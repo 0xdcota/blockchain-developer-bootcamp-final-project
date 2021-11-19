@@ -124,7 +124,7 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
    */
   function withdraw(uint amount) public {
     // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
-    (uint reserveBal, uint mintedCoinBal) =  _checkBalances(reserveTokenID, backedTokenID);
+    (uint reserveBal, uint mintedCoinBal) =  _checkBalances(msg.sender, reserveTokenID, backedTokenID);
     
     // Validate user has reserveBal, and input amount is greater than zero, and less than msg.sender reserves deposits.
     require(
@@ -152,6 +152,16 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
 
     // Emit withdraw event.
     emit UserWithdraw(msg.sender, reserveAsset, amount);
+  }
+
+  /**
+   * @notice Function to calculate the max reserves user can withdraw from contract.
+   * @param user Address to check. 
+   */
+  function checkMaxWithdrawal(address user) external view returns (uint max) {
+    // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
+    (uint reserveBal, uint mintedCoinBal) =  _checkBalances(user, reserveTokenID, backedTokenID);
+    max = reserveBal == 0 ? 0 : _checkMaxWithdrawal(reserveBal, mintedCoinBal);
   }
 
   /**
@@ -190,10 +200,11 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
    * @dev  Internal function to query balances in {AssetsAccountant}
    */
   function _checkBalances(
-      uint _reservesTokenID,
-      uint _bAssetRTokenID
+    address user,
+    uint _reservesTokenID,
+    uint _bAssetRTokenID
   ) internal view returns (uint reserveBal, uint mintedCoinBal) {
-      reserveBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _reservesTokenID);
-      mintedCoinBal = IERC1155(address(assetsAccountant)).balanceOf(msg.sender, _bAssetRTokenID);
+      reserveBal = IERC1155(address(assetsAccountant)).balanceOf(user, _reservesTokenID);
+      mintedCoinBal = IERC1155(address(assetsAccountant)).balanceOf(user, _bAssetRTokenID);
   }
 }

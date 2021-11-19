@@ -31,4 +31,7 @@ To test application in a local environment, you will need three terminals:
 
 Open a browser and go to: `http://localhost:9080/`
 
-NOTE! Clear browser cache memory (CTRL+SHIT+R) to test changes in ./frontend-app/app.js, then reload `http://localhost:9080/` with (F5)
+### Set up NOTES! 
+
+- Clear browser cache memory (CTRL+SHIT+R) to test changes in ./frontend-app/app.js, then reload `http://localhost:9080/` with (F5).
+- Reset Metamask accounts if ganache-cli is restarted.
