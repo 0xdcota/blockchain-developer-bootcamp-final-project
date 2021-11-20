@@ -1,5 +1,6 @@
 const forwarderOrigin = 'http://localhost:9010'
-// const { WrapperBuilder } = require("redstone-flash-storage");
+const URL1 = "https://api.redstone.finance/prices?symbol=MXNUSD=X&provider=redstone-stocks&limit=1";
+const URL2 = "https://api.redstone.finance/prices?symbol=ETH&provider=redstone&limit=1";
 
 //Elements of the Website
 // Buttons
@@ -8,6 +9,7 @@ const depositButton = document.getElementById('depositButton');
 const withdrawButton = document.getElementById('withdrawButton');
 const mintButton = document.getElementById('mintButton');
 const paybackButton = document.getElementById('paybackButton');
+const triggerOnChainButton = document.getElementById('triggerOnChain');
 // Inputs
 const wethDepositInput = document.getElementById('wethDepositInput');
 const wethWithdrawInput = document.getElementById('wethWithdrawInput');
@@ -24,6 +26,10 @@ const lockedReserves = document.getElementById('lockedReserves');
 const eFIATBalance = document.getElementById('eFIATBalance');
 const yourMinted = document.getElementById('yourMinted');
 const mintPower = document.getElementById('yourMintPower');
+const oraclePrice1 = document.getElementById('oraclePrice1');
+const oraclePrice2 = document.getElementById('oraclePrice2');
+const oraclePrice3 = document.getElementById('oraclePrice3');
+const onChainPrice = document.getElementById('onChainPrice');
 
 // Global Scopte Variables
 const contractpaths = [
@@ -54,11 +60,13 @@ const loadContracts = async (paths, signer) => {
       let json = await $.getJSON(paths[i]);
       let abi = json.abi;
       let lastMigration = getLastMigration(json);
-      contractCollector[i] = new ethers.Contract(
-              lastMigration.address,
-              abi,
-              signer
-      )
+      let contract = new ethers.Contract(
+        lastMigration.address,
+        abi,
+        signer
+      );
+      contractCollector[i] = contract;
+      // contractCollector[i] = await redstoneWrap(contract);
   }
   return contractCollector;
 }
@@ -69,59 +77,149 @@ const getLastMigration = (artifact) => {
   return networks[timestamps[lastItem]];
 }
 
+const redstoneWrap = async (contract) => {
+  return redstoneFlashStorage.WrapperBuilder
+  .wrapLite(contract)
+  .usingPriceFeed("redstone");
+}
+
+const redstoneAuthorize = async(wrappedContract) => {
+  let authTx = await wrappedContract.authorizeProvider();
+  let receipt = await authTx.wait(); 
+  console.log("authorizeProvider OK", receipt);
+}
+
 // Get View Functions
 
 const getNativeBalance = async () => {
-  let balance = await provider.getBalance(accounts[0]);
-  balance = balance/1e18;
-  getAccountsResult.innerHTML = accounts[0] || 'Not able to get accounts';
-  getAccountBalance.innerHTML = balance.toFixed(4) || 'N/A';
+  try {
+    let balance = await provider.getBalance(accounts[0]);
+    balance = balance/1e18;
+    getAccountsResult.innerHTML = accounts[0] || 'Not able to get accounts';
+    getAccountBalance.innerHTML = balance.toFixed(4) || 'N/A';
+  } catch (error) {
+    console.log("failed getNativeBalance");
+    console.log(error);
+  }
+
 }
 
 const getMockWETHBalance = async () => {
-  let mockWETHbal = await mockweth.balanceOf(accounts[0]);
-  mockWETHbal = mockWETHbal/1e18;
-  mockwethAddr.innerHTML = mockweth.address;
-  getWETHBalance.innerHTML = mockWETHbal.toFixed(4);
+  try {
+    let mockWETHbal = await mockweth.balanceOf(accounts[0]);
+    mockWETHbal = mockWETHbal/1e18;
+    mockwethAddr.innerHTML = mockweth.address;
+    getWETHBalance.innerHTML = mockWETHbal.toFixed(4);
+  } catch (error) {
+    console.log("failed getMockWETHBalance");
+    console.log(error);
+  }
 }
 
 const getDepositReservesBalance = async () => {
-  let tokenID = await reservehouse.reserveTokenID();
-  let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
-  reserveBal = reserveBal/1e18;
-  yourReserves.innerHTML = reserveBal.toFixed(4);
-  return reserveBal;
+  try {
+    let tokenID = await reservehouse.reserveTokenID();
+    let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
+    reserveBal = reserveBal/1e18;
+    yourReserves.innerHTML = reserveBal.toFixed(4);
+    return reserveBal;
+  } catch (error) {
+    console.log("failed getDepositReservesBalance");
+    console.log(error);
+  }
 }
 
 const geteFiatBalance = async () => {
-  let efiatBal = await efiat.balanceOf(accounts[0]);
-  efiatBal = efiatBal/1e18;
-  eFIATBalance.innerHTML = efiatBal.toFixed(2);
+  try {
+    let efiatBal = await efiat.balanceOf(accounts[0]);
+    efiatBal = efiatBal/1e18;
+    eFIATBalance.innerHTML = moneyFormat(efiatBal);
+  } catch (error) {
+    console.log("failed geteFiatBalance");
+    console.log(error);
+  }
 }
 
 const getMintefiatBalance = async () => {
-  let tokenID = await reservehouse.backedTokenID();
-  let mintedBal = await accountant.balanceOf(accounts[0],tokenID);
-  mintedBal = mintedBal/1e18;
-  yourMinted.innerHTML = mintedBal.toFixed(2);
+  try {
+    let tokenID = await reservehouse.backedTokenID();
+    let mintedBal = await accountant.balanceOf(accounts[0],tokenID);
+    mintedBal = mintedBal/1e18;
+    yourMinted.innerHTML = moneyFormat(mintedBal);
+  } catch (error) {
+    console.log("failed getMintefiatBalance");
+    console.log(error);
+  }
 }
 
 const getMintPower = async () => {
-  let power  = await coinhouse.checkMintingPower(
-    accounts[0],
-    reservehouse.address,
-    mockweth.address
-    )
-    power = power/1e18;
-    mintPower.innerHTML = power.toFixed(2);
+  try {
+    let power  = await coinhouse.checkMintingPower(
+      accounts[0],
+      reservehouse.address,
+      mockweth.address
+      )
+      power = power/1e18;
+      mintPower.innerHTML = moneyFormat(power);  
+  } catch (error) {
+    console.log("failed getMintPower");
+    console.log(error); 
+  }
 }
 
 const getLockedReserves = async () => {
-  let max = await reservehouse.checkMaxWithdrawal(accounts[0]);
-  max = max/1e18;
-  let reserve = await getDepositReservesBalance();
-  let locked = reserve - max;
-  lockedReserves.innerHTML = locked.toFixed(6);
+  try {
+    let max = await reservehouse.checkMaxWithdrawal(accounts[0]);
+    max = max/1e18;
+    let reserve = await getDepositReservesBalance();
+    let locked = reserve - max;
+    console.log(`locked: ${locked.toFixed(4)}, reserve: ${reserve.toFixed(4)}, max: ${max.toFixed(4)}`)
+    lockedReserves.innerHTML = locked.toFixed(6);
+  } catch (error) {
+    console.log("failed getLockedReserves");
+    console.log(error); 
+  }
+}
+
+const moneyFormat = (number) => {
+  return new Intl.NumberFormat('en-US').format(number);
+}
+
+const priceFetcher = async (url) => {
+  try {
+    let response = await fetch(url);
+    let data = await response.json();
+    console.log(data[0]);
+    return data[0].value;
+  } catch (error) {
+    console.log("failed priceFetcher");
+    console.log(error);
+  }
+}
+
+const getOraclePrices = async () => {
+  try {
+    let priceusdefiat = await priceFetcher(URL1);
+    let priceusdeth = await priceFetcher(URL2);
+    let compute = priceusdeth / priceusdefiat;
+    oraclePrice1.innerHTML = moneyFormat(priceusdefiat);
+    oraclePrice2.innerHTML = moneyFormat(priceusdeth);
+    oraclePrice3.innerHTML = moneyFormat(compute);
+  } catch (error) {
+    console.log("failed getOraclePrices");
+    console.log(error);
+  }
+}
+
+const getOnChainOraclePrice = async () => {
+  try {
+    let price = await mockoracle.redstoneGetLastPrice();
+    console.log('daigaro');
+    //onChainPrice.innerHTML = price.toFixed(8);  
+  } catch (error) {
+    console.log("failed getOnChainOraclePrice");
+    console.log(error);
+  }
 }
 
 const getAllUpdateView = async () => {
@@ -132,6 +230,7 @@ const getAllUpdateView = async () => {
   getMintefiatBalance();
   getMintPower();
   getLockedReserves();
+  getOraclePrices();
   onboardButton.innerText = 'Refresh Balances';
 }
 
@@ -252,14 +351,6 @@ const paybackEfiat = async () => {
   }
 }
 
-// Helper Functions
-
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
-
-
 const initialize = async() => {
 
   provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -277,6 +368,8 @@ const initialize = async() => {
   }
 
   await runContractLoader();
+  // await redstoneAuthorize(mockoracle);
+
 
   //Created check function to see if the MetaMask extension is installed
   const isMetaMaskInstalled = () => {
@@ -338,5 +431,6 @@ depositButton.onclick = approveERC20;
 withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
+triggerOnChainButton.onclick = getOnChainOraclePrice;
 
 

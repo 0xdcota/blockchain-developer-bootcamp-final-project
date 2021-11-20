@@ -5,12 +5,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-
   <h1>Efiat.world</h1>
   <h3>System for digital backed currencies</h3>
-
   <hr>
-
   <div class="metamask" >
     <button id="connectButton">Connect</button>
     <br>
@@ -22,9 +19,7 @@
       Balance: <span id="getAccountBalance"></span> ETH (localhost ETH) 
     </label>
   </div>
-
   <hr>
-
   <div class="asset-interface">
     <div class="row1">
       <h3>House of Reserves</h3>
@@ -53,13 +48,13 @@
     </div>
   </div>
   <hr>
-
   <div class="asset-interface">
     <div class="row1">
       <h3>House of Coin Minting</h3>
     </div>
     <div class="row2">
-      <h4>Backed Asset to Mint: efiat</h4>
+      <h4>Backed Asset to Mint: efiat</h4> 
+      <p>($efiat assumed to represent $MXN for demonstration purposes.)</p>
       <label>
         Current Wallet Balance: $ <span id="eFIATBalance"></span> efiat
       </label>
@@ -82,9 +77,36 @@
       <button id="paybackButton">Payback efiat and Unlock Reserve</button>
     </div>
   </div>
+  <hr>
+  <div class="asset-interface">
+    <div class="row1">
+      <a href="https://app.redstone.finance/#/app/tokens?selected-tab=3"><h3>Redstone Oracle</h3></a>
+      <p>Fetched using API</p>
+    </div>
+    <div class="row2">
+      <label>
+        usd/eFiat: $ <span id="oraclePrice1"></span>
+      </label>
+      <br>
+      <label>
+        usd/WETH: $ <span id="oraclePrice2"></span> 
+      </label>
+      <br>
+      <label>
+        eFiat/WETH: $ <span id="oraclePrice3"></span> 
+      </label>
+      <br>
+      <p>Fetched on-chain</p>
+      <button id="triggerOnChain">Get On-Chain</button>
+      <label>
+        usd/efiat: $ <span id="onChainPrice"></span> 
+      </label>
+    </div>
+  </div>
+
   <script src="node_modules/@metamask/onboarding/dist/metamask-onboarding.bundle.js" defer></script>
-  <script src="node_modules/redstone-flash-storage/lib/redstone-storage-bundle.js" defer></script>
   <script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js" type="text/javascript"></script>
+  <script src="./frontend-app/redstoneFlashStorage.js" type="text/javascript"></script>
   <script src="./frontend-app/app.js" type="text/javascript" defer></script>
 </body>
 </html>

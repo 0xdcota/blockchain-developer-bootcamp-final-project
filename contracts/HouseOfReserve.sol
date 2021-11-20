@@ -179,17 +179,17 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
       (_mintedCoinBal * 10**(oracle.oraclePriceDecimals())) / price :
       0
     ;
+    
+    // Apply Collateralization Factors to MinReqReserveBal
+    minReqReserveBal =
+        ( minReqReserveBal * collatRatio.numerator) / collatRatio.denominator;
 
-    // Reduce _reserveBal by collateralization factor.
-    uint reserveBalreducedByFactor =
-        ( _reserveBal * collatRatio.denominator) / collatRatio.numerator;
-
-    if(minReqReserveBal > reserveBalreducedByFactor) {
+    if(minReqReserveBal > _reserveBal) {
       // Return zero if undercollateralized or insolvent
       return 0;
-    } else if (minReqReserveBal <= reserveBalreducedByFactor && minReqReserveBal > 0 ) {
+    } else if (minReqReserveBal > 0 && minReqReserveBal <= _reserveBal) {
       // Return the max withrawal amount, if msg.sender has mintedCoin balance and in healthy collateralized
-      return (reserveBalreducedByFactor - minReqReserveBal);
+      return (_reserveBal - minReqReserveBal);
     } else {
       // Return _reserveBal if msg.sender has no minted coin.
       return _reserveBal;

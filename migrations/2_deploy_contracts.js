@@ -7,6 +7,8 @@ const MockWETH = artifacts.require("MockWETH");
 
 module.exports = async function (deployer, network, accounts) {
 
+  const { WrapperBuilder } = require("redstone-flash-storage");
+
   await deployer.deploy(AssetsAccountant);
   await deployer.deploy(HouseOfCoin);
   await deployer.deploy(HouseOfReserve);
@@ -63,7 +65,12 @@ module.exports = async function (deployer, network, accounts) {
   const burner = await fiat.BURNER_ROLE();
   await fiat.grantRole(minter, coinhouse.address);
   await fiat.grantRole(burner, coinhouse.address);
-  
+
+  // Authorize Provider
+  // mockoracle = WrapperBuilder.wrapLite(mockoracle).usingPriceFeed("redstone-stocks");
+  // // console.log(mockoracle);
+  // await mockoracle.authorizeSigner('0x926E370fD53c23f8B71ad2B3217b227E41A92b12');
+                    
 };
 
 // let wallets = await web3.eth.getAccounts();
