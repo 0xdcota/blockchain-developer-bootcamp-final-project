@@ -38,7 +38,7 @@ Open a browser and go to: `http://localhost:9080/`
 
 ## Run Unit Tests
 Ensure you have pre-requesites indicated in Set up sections.
-Open two terminals.
-Install dependencies (if haven't already):` yarn install`
-In one terminal run the development blockchain: `yarn ganache`
-In the other terminal run: `yarn test`
+ - Open two terminals.
+ - Install dependencies (if haven't already):` yarn install`
+ - In one terminal run the development blockchain: `yarn ganache`
+ - In the other terminal run: `yarn test`
