@@ -29,7 +29,7 @@ const mintPower = document.getElementById('yourMintPower');
 const oraclePrice1 = document.getElementById('oraclePrice1');
 const oraclePrice2 = document.getElementById('oraclePrice2');
 const oraclePrice3 = document.getElementById('oraclePrice3');
-const onChainPrice = document.getElementById('onChainPrice');
+// const onChainPrice = document.getElementById('onChainPrice');
 
 // Global Scopte Variables
 const contractpaths = [
@@ -77,10 +77,10 @@ const getLastMigration = (artifact) => {
   return networks[timestamps[lastItem]];
 }
 
-const redstoneWrap = async (contract) => {
+const redstoneWrap = (contract) => {
   return redstoneFlashStorage.WrapperBuilder
-  .wrapLite(contract)
-  .usingPriceFeed("redstone");
+  .wrap(contract)
+  .usingPriceFeed("redstone-stocks");
 }
 
 const redstoneAuthorize = async(wrappedContract) => {
@@ -154,9 +154,9 @@ const getMintefiatBalance = async () => {
 
 const getMintPower = async () => {
   try {
+    let tokenID = await reservehouse.reserveTokenID();
     let power  = await coinhouse.checkMintingPower(
       accounts[0],
-      reservehouse.address,
       mockweth.address
       )
       power = power/1e18;
@@ -213,9 +213,10 @@ const getOraclePrices = async () => {
 
 const getOnChainOraclePrice = async () => {
   try {
-    let price = await mockoracle.redstoneGetLastPrice();
-    console.log('daigaro');
-    //onChainPrice.innerHTML = price.toFixed(8);  
+    let wmockoracle = redstoneWrap(mockoracle);
+    await redstoneAuthorize(wmockoracle);
+    let price = await wmockoracle.redstoneGetLastPrice();
+    onChainPrice.innerHTML = price.toFixed(8);  
   } catch (error) {
     console.log("failed getOnChainOraclePrice");
     console.log(error);
@@ -368,8 +369,6 @@ const initialize = async() => {
   }
 
   await runContractLoader();
-  // await redstoneAuthorize(mockoracle);
-
 
   //Created check function to see if the MetaMask extension is installed
   const isMetaMaskInstalled = () => {
@@ -431,6 +430,6 @@ depositButton.onclick = approveERC20;
 withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
-triggerOnChainButton.onclick = getOnChainOraclePrice;
+// triggerOnChainButton.onclick = getOnChainOraclePrice;
 
 

@@ -4,13 +4,18 @@ pragma solidity 0.8.2;
 interface IAssetsAccountantState {
 
     /**
-     * @dev Returns the address of the HouseOfReserve corresponding to reserveAsset.
-     */
+    * @dev Returns the address of the HouseOfReserve corresponding to reserveAsset.
+    */
     function houseOfReserves(uint reserveAssetTokenID) external view returns(address);
 
     /**
-     * @dev Returns the address of the HouseOfCoin corresponding to backedAsset.
-     */
+    * @dev Returns the reserve Token Id that corresponds to reserveAsset and backedAsset
+    */
+    function reservesIds(address reserveAsset, address backedAsset) external view returns(uint);
+
+    /**
+    * @dev Returns the address of the HouseOfCoin corresponding to backedAsset.
+    */
     function houseOfCoins(address backedAsset) external view returns(address);
 
 }

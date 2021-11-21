@@ -31,6 +31,6 @@ interface IHouseOfReserveState {
     /**
      * @dev Returns the collateralizationRatio of a HouseOfReserve.
      */
-    function collatRatio() external view returns(Factor memory);
+    function collateralRatio() external view returns(Factor memory);
 
 }

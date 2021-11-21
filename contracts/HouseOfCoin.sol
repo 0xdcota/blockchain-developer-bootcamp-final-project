@@ -19,6 +19,23 @@ import "./interfaces/IHouseOfReserveState.sol";
 
 contract HouseOfCoinState {
 
+    // HouseOfCoinMinting Events
+    /**
+    * @dev Log when a user is mints coin.
+    * @param user Address of user that minted coin.
+    * @param backedtokenID Token Id number of asset in {AssetsAccountant}.
+    * @param amount minted.
+    */
+    event CoinMinted(address indexed user, uint indexed backedtokenID, uint amount);
+
+    /**
+    * @dev Log when a user paybacks minted coin.
+    * @param user Address of user that minted coin.
+    * @param backedtokenID Token Id number of asset in {AssetsAccountant}.
+    * @param amount payback.
+    */
+    event CoinPayback(address indexed user, uint indexed backedtokenID, uint amount);
+
     bytes32 public constant HOUSE_TYPE = keccak256("COIN_HOUSE");
 
     address public backedAsset;
@@ -30,30 +47,12 @@ contract HouseOfCoinState {
 
 contract HouseOfCoin is Initializable, HouseOfCoinState {
     
-    // HouseOfCoinMinting Events
-
     /**
-   * @dev Log when a user is mints coin.
-   * @param user Address of user that minted coin.
-   * @param backedtokenID Token Id number of asset in {AssetsAccountant}.
-   * @param amount minted.
-   */
-    event CoinMinted(address indexed user, uint indexed backedtokenID, uint amount);
-
-    /**
-   * @dev Log when a user paybacks minted coin.
-   * @param user Address of user that minted coin.
-   * @param backedtokenID Token Id number of asset in {AssetsAccountant}.
-   * @param amount payback.
-   */
-    event CoinPayback(address indexed user, uint indexed backedtokenID, uint amount);
-
-    /**
-   * @dev Initializes this contract by setting:
-   * @param _backedAsset ERC20 address of the asset type of coin to be minted in this contract.
-   * @param _assetsAccountant Address of the {AssetsAccountant} contract.
-   * @param _oracle Address of the oracle that will return price in _backedAsset units per reserve asset units.
-   */
+    * @dev Initializes this contract by setting:
+    * @param _backedAsset ERC20 address of the asset type of coin to be minted in this contract.
+    * @param _assetsAccountant Address of the {AssetsAccountant} contract.
+    * @param _oracle Address of the oracle that will return price in _backedAsset units per reserve asset units.
+    */
     function initialize(
         address _backedAsset,
         address _assetsAccountant,
@@ -66,32 +65,43 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     }
 
     /**
-   * @notice  Function to mint ERC20 'backedAsset' of this HouseOfCoin.
-   * @dev  Requires user to have reserves for this backed asset at HouseOfReserves.
-   * @param reserveAsset ERC20 address of asset to be used to back the minted coins.
-   * @param houseOfReserve Address of the {HouseOfReserves} contract that manages the 'reserveAsset'.
-   * @param amount To mint. 
-   * Emits a {CoinMinted} event.
-   */
+    * @notice  Function to mint ERC20 'backedAsset' of this HouseOfCoin.
+    * @dev  Requires user to have reserves for this backed asset at HouseOfReserves.
+    * @param reserveAsset ERC20 address of asset to be used to back the minted coins.
+    * @param houseOfReserve Address of the {HouseOfReserves} contract that manages the 'reserveAsset'.
+    * @param amount To mint. 
+    * Emits a {CoinMinted} event.
+    */
     function mintCoin(address reserveAsset, address houseOfReserve, uint amount) public {
 
         IHouseOfReserveState hOfReserve = IHouseOfReserveState(houseOfReserve);
         IERC20Extension bAsset = IERC20Extension(backedAsset);
 
         uint reserveTokenID = hOfReserve.reserveTokenID();
+        uint backedTokenID = getBackedTokenID(reserveAsset);
 
-        // Validate reserveAsset and houseOfReserve inputs.
+        // Validate reserveAsset is active with {AssetsAccountant} and check houseOfReserve inputs.
         require(
             IAssetsAccountantState(assetsAccountant).houseOfReserves(reserveTokenID) != address(0) &&
             hOfReserve.reserveAsset() == reserveAsset,
             "Not valid reserveAsset!"
         );
 
-        // Validate that HouseOfCoin can mint backedAsset
+        // Validate this HouseOfCoin is active with {AssetsAccountant} and can mint backedAsset.
         require(bAsset.hasRole(keccak256("MINTER_ROLE"), address(this)), "houseOfCoin not authorized to mint backedAsset!" );
 
+        // Get inputs for checking minting power, collateralization factor and oracle price
+        IHouseOfReserveState.Factor memory collatRatio = hOfReserve.collateralRatio();
+        uint price = oracle.getLastPrice();
+
         // Checks minting power of msg.sender.
-        uint mintingPower = checkMintingPower(msg.sender, hOfReserve, reserveAsset);
+        uint mintingPower = _checkMintingPower(
+            msg.sender,
+            reserveTokenID,
+            backedTokenID,
+            collatRatio,
+            price
+        );
         require(
             mintingPower > 0 &&
             mintingPower >= amount,
@@ -99,7 +109,6 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
         );
 
         // Update state in AssetAccountant
-        uint backedTokenID = getTokenID(reserveAsset);
         IAssetsAccountant(assetsAccountant).mint(
             msg.sender,
             backedTokenID,
@@ -115,12 +124,12 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     }
 
     /**
-   * @notice  Function to payback ERC20 'backedAsset' of this HouseOfCoin.
-   * @dev Requires knowledge of the reserve asset used to back the minted coins.
-   * @param _backedTokenID Token Id in {AssetsAccountant}, releases the reserve asset used in 'getTokenID'.
-   * @param amount To payback. 
-   * Emits a {CoinPayback} event.
-   */
+    * @notice  Function to payback ERC20 'backedAsset' of this HouseOfCoin.
+    * @dev Requires knowledge of the reserve asset used to back the minted coins.
+    * @param _backedTokenID Token Id in {AssetsAccountant}, releases the reserve asset used in 'getTokenID'.
+    * @param amount To payback. 
+    * Emits a {CoinPayback} event.
+    */
     function paybackCoin(uint _backedTokenID, uint amount) public {
 
         IAssetsAccountant accountant = IAssetsAccountant(assetsAccountant);
@@ -147,25 +156,73 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     }
 
     /**
-   * @dev  Get backedTokenID to be used in {AssetsAccountant}
-   * @param _reserveAsset ERC20 address of the reserve asset used to back coin.
-   */
-    function getTokenID(address _reserveAsset) public view returns(uint) {
+    *
+    * @dev  Get backedTokenID to be used in {AssetsAccountant}
+    * @param _reserveAsset ERC20 address of the reserve asset used to back coin.
+    */
+    function getBackedTokenID(address _reserveAsset) public view returns(uint) {
         return uint(keccak256(abi.encodePacked(_reserveAsset, backedAsset, "backedAsset")));
+    }
+    
+    /**
+    * @dev  Internal function to query balances in {AssetsAccountant}
+    */
+    function _checkBalances(
+        address user,
+        uint _reservesTokenID,
+        uint _bAssetRTokenID
+    ) internal view returns (uint reserveBal, uint mintedCoinBal) {
+        reserveBal = IERC1155(assetsAccountant).balanceOf(user, _reservesTokenID);
+        mintedCoinBal = IERC1155(assetsAccountant).balanceOf(user, _bAssetRTokenID);
     }
 
     /**
-   * @notice  Returns the amount of backed asset coins user can mint with unused reserve asset.
-   * @param user to check minting power.
-   * @param hOfReserve Address of the HouseOfReserve contract that handles the reserve asset.
-   * @param reserveAsset ERC20 address of the reserve asset. 
-   */
-    function checkMintingPower(address user, IHouseOfReserveState hOfReserve, address reserveAsset) public view returns(uint) {
+    * @notice  External function that returns the amount of backed asset coins user can mint with unused reserve asset.
+    * @param user to check minting power.
+    * @param reserveAsset Address of reserve asset.
+    */
+    function checkMintingPower(address user, address reserveAsset) external view returns(uint) {
+
+        // Get all required inputs
+        IAssetsAccountantState accountant = IAssetsAccountantState(assetsAccountant);
+
+        uint reserveTokenID = accountant.reservesIds(reserveAsset, backedAsset);
+
+        uint backedTokenID = getBackedTokenID(reserveAsset);
+
+        address hOfReserveAddr = accountant.houseOfReserves(reserveTokenID);
+
+        IHouseOfReserveState hOfReserve = IHouseOfReserveState(hOfReserveAddr);
+
+        IHouseOfReserveState.Factor memory collatRatio = hOfReserve.collateralRatio();
+
+        uint price = oracle.getLastPrice();
+
+        return _checkMintingPower(
+            user,
+            reserveTokenID,
+            backedTokenID,
+            collatRatio,
+            price
+        );
+    }
+
+    /**
+    * @dev  Internal function to check if user is liquidatable
+    */
+    function _checkMintingPower(
+        address user,
+        uint reserveTokenID,
+        uint backedTokenID,
+        IHouseOfReserveState.Factor memory collatRatio,
+        uint price
+    ) public view returns(uint) {
+
         // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
         (uint reserveBal, uint mintedCoinBal) =  _checkBalances(
             user,
-            hOfReserve.reserveTokenID(),
-            getTokenID(reserveAsset)
+            reserveTokenID,
+            backedTokenID
         );
 
         // Check if msg.sender has reserves
@@ -177,7 +234,8 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
             (bool liquidatable, uint mintingPower) = _checkIfLiquidatable(
                 reserveBal,
                 mintedCoinBal,
-                hOfReserve
+                collatRatio,
+                price
             );
             if(liquidatable) {
                 // If msg.sender is liquidatable, minting power = 0.
@@ -189,19 +247,14 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
     }
 
     /**
-   * @dev  Internal function to check if user is liquidatable
-   */
+    * @dev  Internal function to check if user is liquidatable
+    */
     function _checkIfLiquidatable(
         uint reserveBal,
         uint mintedCoinBal,
-        IHouseOfReserveState hOfReserve
+        IHouseOfReserveState.Factor memory collatRatio,
+        uint price
     ) internal view returns (bool liquidatable, uint mintingPower) {
-        // Get price
-        // Price should be: backedAsset per unit of reserveAsset {backedAsset / reserveAsset}
-        uint price = oracle.getLastPrice();
-
-        // Get collateralization ratio
-        IHouseOfReserveState.Factor memory collatRatio = hOfReserve.collatRatio();
 
         uint reserveBalreducedByFactor =
             ( reserveBal * collatRatio.denominator) / collatRatio.numerator;
@@ -213,17 +266,4 @@ contract HouseOfCoin is Initializable, HouseOfCoinState {
 
         mintingPower = !liquidatable ? (maxMintableAmount - mintedCoinBal) : 0;
     }
-
-    /**
-   * @dev  Internal function to query balances in {AssetsAccountant}
-   */
-    function _checkBalances(
-        address user,
-        uint _reservesTokenID,
-        uint _bAssetRTokenID
-    ) internal view returns (uint reserveBal, uint mintedCoinBal) {
-        reserveBal = IERC1155(assetsAccountant).balanceOf(user, _reservesTokenID);
-        mintedCoinBal = IERC1155(assetsAccountant).balanceOf(user, _bAssetRTokenID);
-    }
-
 }

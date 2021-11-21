@@ -10,6 +10,7 @@
   "scripts": {
     "ganache": "ganache-cli -d",
     "server": "static-server",
-    "deploy": "truffle migrate"
+    "deploy": "truffle migrate",
+    "test": "truffle test"
   }
 }

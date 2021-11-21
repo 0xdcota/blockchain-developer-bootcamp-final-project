@@ -6,7 +6,8 @@ pragma solidity 0.8.2;
 * @author daigaro.eth
 * @notice Keeps records of all deposits, withdrawals, and minted assets by users using ERC1155 tokens.
 * @dev Contracts are split into state and functionality.
-* @dev At time of deployment, deployer is DEFAULT_ADMIN, however, this role should be transferred to a governance system. 
+* @dev At time of deployment, deployer is DEFAULT_ADMIN, however, this role should be transferred to a governance system.
+* @dev Users do not interact directly with this contract. 
 */
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
@@ -16,10 +17,13 @@ import "./interfaces/IHouseOfCoinState.sol";
 
 contract AssetsAccountantState {
 
-    // reserveAssetTokenID => houseOfReserve 
+    // reserveTokenID => houseOfReserve 
     mapping(uint => address) public houseOfReserves;
 
-    // backedAsset address => houseOfCoin
+    // reserveAsset => backAsset => reserveTokenID
+    mapping(address => mapping(address => uint)) public reservesIds;
+
+    // backedAsset  => houseOfCoin
     mapping(address => address) public houseOfCoins;
 
     mapping(address => bool) internal _isARegisteredHouse;
@@ -73,6 +77,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
 
             IHouseOfReserveState hOfReserve = IHouseOfReserveState(houseAddress);
             uint reserveTokenID = hOfReserve.reserveTokenID();
+            address bAsset = hOfReserve.backedAsset();
 
             // Check that asset has NOT a house address assigned
             require(houseOfReserves[reserveTokenID] == address(0), "ReserveAsset already registered!");
@@ -86,6 +91,7 @@ contract AssetsAccountant is ERC1155, AccessControl, AssetsAccountantState {
             // Register mappings
             houseOfReserves[reserveTokenID] = houseAddress;
             _isARegisteredHouse[houseAddress] = true;
+            reservesIds[asset][bAsset] = reserveTokenID;
 
             // Assign Roles
             _setupRole(MINTER_ROLE, houseAddress);

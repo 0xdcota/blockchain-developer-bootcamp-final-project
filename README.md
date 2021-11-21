@@ -35,3 +35,10 @@ Open a browser and go to: `http://localhost:9080/`
 
 - Clear browser cache memory (CTRL+SHIT+R) to test changes in ./frontend-app/app.js, then reload `http://localhost:9080/` with (F5).
 - Reset Metamask accounts if ganache-cli is restarted.
+
+## Run Unit Tests
+Ensure you have pre-requesites indicated in Set up sections.
+Open two terminals.
+Install dependencies (if haven't already):` yarn install`
+In one terminal run the development blockchain: `yarn ganache`
+In the other terminal run: `yarn test`

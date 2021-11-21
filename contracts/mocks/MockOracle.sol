@@ -19,7 +19,7 @@ contract MockOracleState{
 
     uint public maxDelay = 3 * 60;
 
-    address constant public trustedSigner = 0x0C39486f770B26F5527BBBf942726537986Cd7eb;
+    address public trustedSigner;
 }
 
 contract MockOracle is Ownable, MockOracleState {
@@ -48,6 +48,21 @@ contract MockOracle is Ownable, MockOracleState {
 
     function redstoneGetLastPrice() external view returns(uint) {
         return getPriceFromMsg(bytes32("MXNUSD=X"));
+    }
+
+    // The following events and functions are taken from Redstone-Flash-Storage
+    // This mock oracle does not implement functionally the Redstone Oracle
+
+    /**
+    * @dev emitted after the owner updates trusted signer
+    * @param newSigner the address of the new signer
+    **/
+    event TrustedSignerChanged(address indexed newSigner);
+
+    function authorizeSigner(address _trustedSigner) onlyOwner external {
+    require(_trustedSigner != address(0));
+    trustedSigner = _trustedSigner;
+    emit TrustedSignerChanged(trustedSigner);
     }
 
     function getPriceFromMsg(bytes32 symbol) internal view returns(uint256) {
@@ -146,15 +161,4 @@ contract MockOracle is Ownable, MockOracleState {
     
     return val;
   }
-
-
-  /* ========== EVENTS ========== */
-
-
-  /**
-    * @dev emitted after the owner updates trusted signer
-    * @param newSigner the address of the new signer
-  **/
-  event TrustedSignerChanged(address indexed newSigner);
-     
 }

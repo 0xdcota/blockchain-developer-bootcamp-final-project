@@ -31,7 +31,7 @@ module.exports = async function (deployer, network, accounts) {
   await mockoracle.setPrice(web3.utils.toWei("90500", "ether"));
 
   // 2.- Load first 5 accounts with mockweth
-  for(let i =0; i < 5; i++) {
+  for(let i =0; i < 7; i++) {
     await mockweth.deposit(
         {
             from: accounts[i],
@@ -72,21 +72,3 @@ module.exports = async function (deployer, network, accounts) {
   // await mockoracle.authorizeSigner('0x926E370fD53c23f8B71ad2B3217b227E41A92b12');
                     
 };
-
-// let wallets = await web3.eth.getAccounts();
-// let accountant = await AssetsAccountant.deployed();
-// let coinhouse = await HouseOfCoin.deployed();
-// let reserverhouse = await HouseOfReserve.deployed();
-// let oracle = await MockOracle.deployed();
-// let fiat = await DigitalFiat.deployed();
-// let weth = await MockWETH.deployed();
-
-// PRE-STAGING
-// await weth.deposit({value: 20e18});
-// await oracle.setPrice(9.560000999999999e+22);
-
-// SET_UP
-// let minter = await fiat.MINTER_ROLE();
-// await fiat.grantRole(minter, coinhouse.address);
-// await coinhouse.initialize(fiat.address, accountant.address, oracle.address);
-

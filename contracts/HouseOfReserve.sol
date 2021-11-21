@@ -13,6 +13,7 @@ pragma solidity 0.8.2;
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IAssetsAccountant.sol";
 import "./interfaces/IOracle.sol";
 
@@ -34,6 +35,11 @@ contract HouseOfReserveState {
   * @param amount withraw.
   */
   event UserWithdraw(address indexed user, address indexed asset, uint amount);
+    /**  
+  * @dev Emit when user DEFAULT_ADMIN changes the collateralization factor of this HouseOfReserve
+  * @param newFactor New struct indicating the factor values.
+  */
+  event CollateralRatioChanged(Factor newFactor);
 
   struct Factor{
       uint numerator;
@@ -48,11 +54,7 @@ contract HouseOfReserveState {
 
   uint public  backedTokenID;
 
-  /**
-  * Requirements:
-  * - should be numerator > denominator
-  */
-  Factor public collatRatio;
+  Factor public collateralRatio;
 
   IAssetsAccountant public assetsAccountant;
 
@@ -60,12 +62,9 @@ contract HouseOfReserveState {
 
   bytes32 public constant HOUSE_TYPE = keccak256("RESERVE_HOUSE");
 
-  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    
-  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 }
 
-contract HouseOfReserve is Initializable, HouseOfReserveState {
+contract HouseOfReserve is Initializable, AccessControl, HouseOfReserveState {
 
     /**
    * @dev Initializes this contract by setting:
@@ -85,10 +84,11 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     backedAsset = _backedAsset;
     reserveTokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "collateral")));
     backedTokenID = uint(keccak256(abi.encodePacked(reserveAsset, backedAsset, "backedAsset")));
-    collatRatio.numerator = 150;
-    collatRatio.denominator = 100;
+    collateralRatio.numerator = 150;
+    collateralRatio.denominator = 100;
     assetsAccountant = IAssetsAccountant(_assetsAccountant);
     oracle = IOracle(_oracle);
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
   }
 
@@ -155,6 +155,30 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
   }
 
   /**
+  * @notice Function to set the collateralization ration of this contract.
+  * @dev Numerator and denominator should be > 0, and numerator > denominator
+  * @param numerator of new collateralization factor.
+  * @param denominator of new collateralization factor.
+  * Emits a {CollateralRatioChanged} event.
+  */
+  function setCollateralRatio(uint numerator, uint denominator) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    // Check inputs
+    require(
+      numerator > 0 &&
+      denominator > 0 &&
+      numerator > denominator,
+      "Invalid inputs!"
+    );
+
+    // Set new collateralization ratio
+    collateralRatio.numerator = numerator;
+    collateralRatio.denominator = denominator;
+
+    // Emit event
+    emit CollateralRatioChanged(collateralRatio);
+  }
+
+  /**
    * @notice Function to calculate the max reserves user can withdraw from contract.
    * @param user Address to check. 
    */
@@ -182,7 +206,7 @@ contract HouseOfReserve is Initializable, HouseOfReserveState {
     
     // Apply Collateralization Factors to MinReqReserveBal
     minReqReserveBal =
-        ( minReqReserveBal * collatRatio.numerator) / collatRatio.denominator;
+        ( minReqReserveBal * collateralRatio.numerator) / collateralRatio.denominator;
 
     if(minReqReserveBal > _reserveBal) {
       // Return zero if undercollateralized or insolvent
