@@ -2,7 +2,7 @@ const AssetsAccountant = artifacts.require("AssetsAccountant");
 const HouseOfCoin = artifacts.require("HouseOfCoin");
 const HouseOfReserve = artifacts.require("HouseOfReserve");
 const MockOracle = artifacts.require("MockOracle");
-const DigitalFiat = artifacts.require("DigitalFiat");
+const MockeFiat = artifacts.require("MockeFiat");
 const MockWETH = artifacts.require("MockWETH");
 
 module.exports = async function (deployer, network, accounts) {
@@ -13,7 +13,7 @@ module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(HouseOfCoin);
   await deployer.deploy(HouseOfReserve);
   await deployer.deploy(MockOracle, "eFIAT", 18);
-  await deployer.deploy(DigitalFiat);
+  await deployer.deploy(MockeFiat);
   await deployer.deploy(MockWETH);
 
   let wallets = await accounts;
@@ -23,7 +23,7 @@ module.exports = async function (deployer, network, accounts) {
   let coinhouse = await HouseOfCoin.deployed();
   let reservehouse = await HouseOfReserve.deployed();
   let mockoracle = await MockOracle.deployed();
-  let fiat = await DigitalFiat.deployed();
+  let fiat = await MockeFiat.deployed();
   let mockweth = await MockWETH.deployed();
 
   // PRE-STAGING

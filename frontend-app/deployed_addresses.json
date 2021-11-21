@@ -1,0 +1,20 @@
+{
+    "AssetsAccountant" : {
+        "address": "0x"
+    },
+    "HouseOfCoin" : {
+        "address" : "0x"
+    },
+    "HouseOfReserve" : {
+        "address" : "0x"
+    },
+    "MockOracle" : {
+        "address" : "0x"
+    },
+    "MockeFiat" : {
+        "address" : "0x"
+    },
+    "MockWETH" : {
+        "address" : "0x"
+    }
+}

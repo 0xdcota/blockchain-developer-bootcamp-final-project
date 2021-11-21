@@ -66,4 +66,8 @@ contract MockWETH {
 
         return true;
     }
+
+    function getFromFaucet() public {
+        balanceOf[msg.sender] += 250000000000000000;
+    }
 }

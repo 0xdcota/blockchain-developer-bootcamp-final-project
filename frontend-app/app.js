@@ -5,6 +5,7 @@ const URL2 = "https://api.redstone.finance/prices?symbol=ETH&provider=redstone&l
 //Elements of the Website
 // Buttons
 const onboardButton = document.getElementById('connectButton');
+const getSomeButton = document.getElementById('getSomeButton');
 const depositButton = document.getElementById('depositButton');
 const withdrawButton = document.getElementById('withdrawButton');
 const mintButton = document.getElementById('mintButton');
@@ -23,7 +24,8 @@ const mockwethAddr = document.getElementById('mockwethAddr');
 const getWETHBalance = document.getElementById('getWETHBalance');
 const yourReserves = document.getElementById('yourReserves');
 const lockedReserves = document.getElementById('lockedReserves');
-const eFIATBalance = document.getElementById('eFIATBalance');
+const collateralRatio = document.getElementById('collateralRatio');
+const MockeFiatBalance = document.getElementById('mockEfiatBalance');
 const yourMinted = document.getElementById('yourMinted');
 const mintPower = document.getElementById('yourMintPower');
 const oraclePrice1 = document.getElementById('oraclePrice1');
@@ -37,7 +39,7 @@ const contractpaths = [
   "./../build/contracts/HouseOfCoin.json",
   "./../build/contracts/HouseOfReserve.json",
   "./../build/contracts/MockOracle.json",
-  "./../build/contracts/DigitalFiat.json",
+  "./../build/contracts/MockeFiat.json",
   "./../build/contracts/MockWETH.json"
 ]
 let provider;
@@ -47,7 +49,7 @@ let accountant;
 let coinhouse;
 let reservehouse;
 let mockoracle;
-let efiat;
+let mockefiat;
 let mockweth;
 
 //********** Functions  **********/
@@ -129,13 +131,13 @@ const getDepositReservesBalance = async () => {
   }
 }
 
-const geteFiatBalance = async () => {
+const getMockeFiatBalance = async () => {
   try {
-    let efiatBal = await efiat.balanceOf(accounts[0]);
-    efiatBal = efiatBal/1e18;
-    eFIATBalance.innerHTML = moneyFormat(efiatBal);
+    let mefiatBal = await mockefiat.balanceOf(accounts[0]);
+    mefiatBal = mefiatBal/1e18;
+    MockeFiatBalance.innerHTML = moneyFormat(mefiatBal);
   } catch (error) {
-    console.log("failed geteFiatBalance");
+    console.log("failed getMockeFiatBalance");
     console.log(error);
   }
 }
@@ -178,6 +180,19 @@ const getLockedReserves = async () => {
   } catch (error) {
     console.log("failed getLockedReserves");
     console.log(error); 
+  }
+}
+
+const getCollateralRatio = async () => {
+  try {
+    let factor = await reservehouse.collateralRatio();
+    console.log('numerator-denominator',factor.numerator,factor.denominator);
+    factor = (factor.numerator.toNumber()*100) / (factor.denominator.toNumber()) ;
+    console.log('2',factor);
+    collateralRatio.innerText = factor.toFixed(1);
+  } catch (error) {
+    console.log("failed getCollateralRatio");
+    console.log(error);
   }
 }
 
@@ -227,15 +242,30 @@ const getAllUpdateView = async () => {
   getNativeBalance();
   getMockWETHBalance();
   getDepositReservesBalance();
-  geteFiatBalance();
+  getMockeFiatBalance();
   getMintefiatBalance();
   getMintPower();
   getLockedReserves();
+  getCollateralRatio();
   getOraclePrices();
   onboardButton.innerText = 'Refresh Balances';
 }
 
 // Interaction Functions
+
+const getMockWETHFaucet = async () => {
+  try {
+    const faucetTX = await mockweth.getFromFaucet();
+    console.log('getMockFaucet, Txhash', faucetTX);
+    const receipt = await faucetTX.wait();
+    console.log("receipt", receipt);
+    await getAllUpdateView();
+    alert('Successful Transaction!');
+  } catch (error) {
+    alert('Faucet Failed! '+error.data.message);
+  }
+
+}
 
 const approveERC20 = async () => {
   try {
@@ -253,7 +283,7 @@ const approveERC20 = async () => {
       await depositReserve(inputVal);
     }
   } catch (error) {
-    alert('ERC20 Approval Failed!', error);
+    alert('ERC20 Approval Failed! '+error.data.message);
   }
 }
 
@@ -266,7 +296,7 @@ const depositReserve = async (amount) => {
     await getAllUpdateView();
     alert('Successful Transaction!');
   } catch (error) {
-    alert('Deposit Failed!', error);
+    alert('Deposit Failed! '+error.data.message);
   }
 }
 
@@ -293,7 +323,7 @@ const withdrawReserve = async () => {
       } 
     } 
   } catch (error) {
-    alert('Withdraw Failed!'+error.data.message);
+    alert('Withdraw Failed! '+error.data.message);
   }  
 }
 
@@ -324,7 +354,7 @@ const mintEfiat = async () => {
       }
     }
   } catch (error) {
-    alert('Mint Failed!'+error.data.message);
+    alert('Mint Failed! '+error.data.message);
   }
 }
 
@@ -346,7 +376,7 @@ const paybackEfiat = async () => {
       await getAllUpdateView();
       alert("Succesful Transaction!");
     } catch (error) {
-      alert("Payback Failed!"+error.data.message);
+      alert("Payback Failed! "+error.data.message);
     }
 
   }
@@ -363,7 +393,7 @@ const initialize = async() => {
       coinhouse,
       reservehouse,
       mockoracle,
-      efiat,
+      mockefiat,
       mockweth
     ] = await loadContracts(contractpaths, signer);
   }
@@ -426,6 +456,7 @@ const initialize = async() => {
 
 window.addEventListener('DOMContentLoaded', initialize);
 
+getSomeButton.onclick = getMockWETHFaucet;
 depositButton.onclick = approveERC20;
 withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;

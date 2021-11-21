@@ -3,9 +3,34 @@
 <head>
   <title>eFiat World</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style type="text/css">
+    h1 {
+      text-align: center;
+      background-color: rgb(207, 197, 197);
+    }
+    h3, h4 {
+      text-align: center;
+    }
+    body {
+      color: black;
+      background-color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-right: -50%;
+      transform: translate(-50%, -50%) 
+    }
+    label {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    div.oracle_div {
+      text-align: center;
+    }
+    </style>
 </head>
 <body>
-  <h1>Efiat.world</h1>
+  <h1 "">Efiat.world</h1>
   <h3>System for digital backed currencies</h3>
   <hr>
   <div class="metamask" >
@@ -26,6 +51,8 @@
     </div>
     <div class="row2">
       <h4>Reserve Asset: MockWETH [<span id="mockwethAddr"></span>]</h4>
+      <button id="getSomeButton">MockWETH Faucet</button>
+      <br>
       <label>
         Current Wallet Balance: <span id="getWETHBalance"></span> WETH
       </label>
@@ -36,6 +63,10 @@
       <br>
       <label>
         Locked Reserves: <span id="lockedReserves"></span> WETH
+      </label>
+      <br>
+      <label>
+        Collateralization Ratio: <span id="collateralRatio"></span> %
       </label>
     </div>
     <div class="row3">
@@ -56,7 +87,7 @@
       <h4>Backed Asset to Mint: efiat</h4> 
       <p>($efiat assumed to represent $MXN for demonstration purposes.)</p>
       <label>
-        Current Wallet Balance: $ <span id="eFIATBalance"></span> efiat
+        Current Wallet Balance: $ <span id="mockEfiatBalance"></span> efiat
       </label>
       <br>
       <label>
@@ -78,7 +109,7 @@
     </div>
   </div>
   <hr>
-  <div class="asset-interface">
+  <div class="oracle_div">
     <div class="row1">
       <a href="https://app.redstone.finance/#/app/tokens?selected-tab=3"><h3>Redstone Oracle</h3></a>
       <p>Fetched using API</p>

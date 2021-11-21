@@ -11,6 +11,7 @@
     "ganache": "ganache-cli -d",
     "server": "static-server",
     "deploy": "truffle migrate",
-    "test": "truffle test"
+    "test": "truffle test",
+    "build": "truffle compile"
   }
 }
