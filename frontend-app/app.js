@@ -1,3 +1,4 @@
+$('#loadcircle').hide();
 const forwarderOrigin = 'http://localhost:9010'
 const URL1 = "https://api.redstone.finance/prices?symbol=MXNUSD=X&provider=redstone-stocks&limit=1";
 const URL2 = "https://api.redstone.finance/prices?symbol=ETH&provider=redstone&limit=1";
@@ -32,6 +33,9 @@ const oraclePrice1 = document.getElementById('oraclePrice1');
 const oraclePrice2 = document.getElementById('oraclePrice2');
 const oraclePrice3 = document.getElementById('oraclePrice3');
 // const onChainPrice = document.getElementById('onChainPrice');
+
+// Other Elements
+const loaderCircle = document.getElementById('loadcircle');
 
 // Global Scopte Variables
 const contractpaths = [
@@ -178,7 +182,6 @@ const getLockedReserves = async () => {
     max = max/1e18;
     let reserve = await getDepositReservesBalance();
     let locked = reserve - max;
-    console.log(`locked: ${locked.toFixed(4)}, reserve: ${reserve.toFixed(4)}, max: ${max.toFixed(4)}`)
     lockedReserves.innerHTML = locked.toFixed(6);
   } catch (error) {
     console.log("failed getLockedReserves");
@@ -189,9 +192,7 @@ const getLockedReserves = async () => {
 const getCollateralRatio = async () => {
   try {
     let factor = await reservehouse.collateralRatio();
-    console.log('numerator-denominator',factor.numerator,factor.denominator);
-    factor = (factor.numerator.toNumber()*100) / (factor.denominator.toNumber()) ;
-    console.log('2',factor);
+    factor = (factor.numerator.toNumber()*100) / (factor.denominator.toNumber());
     collateralRatio.innerText = factor.toFixed(1);
   } catch (error) {
     console.log("failed getCollateralRatio");
@@ -271,22 +272,23 @@ const getMockWETHFaucet = async () => {
 }
 
 const approveERC20 = async () => {
-  try {
-    // Check and read Inputvalue
-    let inputVal = document.getElementById("wethDepositInput").value;
-    let mockWETHbal = await mockweth.balanceOf(accounts[0]);
-    if(!inputVal) {
-      alert("enter deposit amount value!");
-    } else {
+  // Check and read Inputvalue
+  let inputVal = document.getElementById("wethDepositInput").value;
+  if(!inputVal) {
+    alert("enter deposit amount value!");
+  } else {
+    $('#loadcircle').show();
+    try {
       let approvaltx = await mockweth.approve(
         reservehouse.address,
         inputVal
       );
       console.log('approval TxHash', approvaltx);
       await depositReserve(inputVal);
+    } catch (error) {
+      alert(`ERC20 Approval Failed! ${error.data.message}`);
+      $('#loadcircle').hide();
     }
-  } catch (error) {
-    alert('ERC20 Approval Failed! '+error.data.message);
   }
 }
 
@@ -299,39 +301,44 @@ const depositReserve = async (amount) => {
     await getAllUpdateView();
     alert('Successful Transaction!');
   } catch (error) {
-    alert('Deposit Failed! '+error.data.message);
+    alert(`Deposit Failed! ${error.data.message}`);
+    $('#loadcircle').hide();
   }
+  $('#loadcircle').hide();
 }
 
 const withdrawReserve = async () => {
-  try {
-    // Check and read Inputvalue
-    let inputVal = document.getElementById("wethWithdrawInput").value;
-    let tokenID = await reservehouse.reserveTokenID();
-    let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
-    let inputValBN;
-    if (!inputVal) {
-      alert("enter withdraw amount value!");
+  // Check and read Inputvalue
+  let inputVal = document.getElementById("wethWithdrawInput").value;
+  let tokenID = await reservehouse.reserveTokenID();
+  let reserveBal = await accountant.balanceOf(accounts[0],tokenID);
+  let inputValBN;
+  if (!inputVal) {
+    alert("enter withdraw amount value!");
+  } else {
+    inputValBN = ethers.BigNumber.from(inputVal);
+    if (inputValBN.gt(reserveBal)) {
+      alert("cannot withdraw more that reserves!");
     } else {
-      inputValBN = ethers.BigNumber.from(inputVal);
-      if (inputValBN.gt(reserveBal)) {
-        alert("cannot withdraw more that reserves!");
-      } else {
+      $('#loadcircle').show();
+      try {
         let withdrawTx = await reservehouse.withdraw(inputValBN)
         console.log('withdraw TxHash', withdrawTx);
         let receipt = await withdrawTx.wait();
         console.log("receipt", receipt);
         await getAllUpdateView();
         alert('Successful Transaction!');
-      } 
+      } catch (error) {
+        alert(`Withdraw Failed! ${error.data.message}`);
+        $('#loadcircle').hide();
+      }
+      $('#loadcircle').hide();
     } 
-  } catch (error) {
-    alert('Withdraw Failed! '+error.data.message);
-  }  
+  }
 }
+    
 
 const mintEfiat = async () => {
-  try {
     let inputVal = document.getElementById("efiatMintInput").value;
     let reserveAddress = document.getElementById("reserveAddrToUse").value;
     if(!inputVal) {
@@ -340,32 +347,38 @@ const mintEfiat = async () => {
       if (!reserveAddress) {
         alert("enter address value!");
       } else {
-        let inputValBN = ethers.BigNumber.from(inputVal);
-        let tokenID = await reservehouse.reserveTokenID();
-        let hOfReserve = await accountant.houseOfReserves(tokenID);
-        console.log(reserveAddress,hOfReserve,inputValBN);
-        let mintTx = await coinhouse.mintCoin(
-          reserveAddress,
-          hOfReserve,
-          inputValBN
-        )
-        console.log('mintCoin TxHash', mintTx);
-        let receipt = await mintTx.wait();
-        console.log("receipt", receipt);
-        await getAllUpdateView();
-        alert('Successful Transaction!');
+        $('#loadcircle').show();
+        try {
+          let inputValBN = ethers.BigNumber.from(inputVal);
+          let tokenID = await reservehouse.reserveTokenID();
+          let hOfReserve = await accountant.houseOfReserves(tokenID);
+          console.log(reserveAddress,hOfReserve,inputValBN);
+          let mintTx = await coinhouse.mintCoin(
+            reserveAddress,
+            hOfReserve,
+            inputValBN
+          )
+          console.log('mintCoin TxHash', mintTx);
+          let receipt = await mintTx.wait();
+          console.log("receipt", receipt);
+          await getAllUpdateView();
+          alert('Successful Transaction!');
+        } catch (error) {
+          alert(`mintEfiat Failed! ${error.data.message}`);
+          $('#loadcircle').hide(); 
+        }
+        $('#loadcircle').hide();
       }
     }
-  } catch (error) {
-    alert('Mint Failed! '+error.data.message);
-  }
 }
+
 
 const paybackEfiat = async () => {
   let inputVal = document.getElementById("efiatPaybackInput").value;
   if(!inputVal) {
     alert("enter amount value!");
   } else {
+    $('#loadcircle').show();
     try {
       let inputValBN = ethers.BigNumber.from(inputVal);
       let tokenID = await reservehouse.backedTokenID();
@@ -379,9 +392,10 @@ const paybackEfiat = async () => {
       await getAllUpdateView();
       alert("Succesful Transaction!");
     } catch (error) {
-      alert("Payback Failed! "+error.data.message);
+      alert(`Payback Failed! ${error.data.message}`);
+      $('#loadcircle').hide();
     }
-
+    $('#loadcircle').hide();
   }
 }
 

@@ -27,11 +27,30 @@
     div.oracle_div {
       text-align: center;
     }
+    #loadcircle {
+      opacity: 0.1;
+      border: 50px solid #f3f3f3; /* Light grey */
+      border-top: 50px solid #3498db; /* Blue */
+      border-bottom: 50px solid #3498db;
+      border-radius: 50%;
+      position: absolute;
+      top: 25%;
+      left: 30%;
+      width: 200px;
+      height: 200px;
+      animation: spin 2s linear infinite;
+      display: flex;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
     </style>
 </head>
 <body>
-  <h1 "">Efiat.world</h1>
-  <h3>System for digital backed currencies</h3>
+  <h1>Efiat.world</h1>
+  <h3>System for digital backed currencies</h3> 
+  <div id="loadcircle"></div>
   <hr>
   <div class="metamask" >
     <button id="connectButton">Connect</button>
