@@ -42,6 +42,9 @@ const contractpaths = [
   "./../build/contracts/MockeFiat.json",
   "./../build/contracts/MockWETH.json"
 ]
+
+const addressespath = "./frontend-app/deployed_addresses.json";
+
 let provider;
 let signer;
 let accounts;
@@ -58,12 +61,12 @@ let mockweth;
 
 const loadContracts = async (paths, signer) => {
   let contractCollector = new Array(paths.length);
+  const addresses = await $.getJSON(addressespath);
   for (let i = 0; i < paths.length; i++) {
-      let json = await $.getJSON(paths[i]);
-      let abi = json.abi;
-      let lastMigration = getLastMigration(json);
+      let contractjson = await $.getJSON(paths[i]);
+      let abi = contractjson.abi;
       let contract = new ethers.Contract(
-        lastMigration.address,
+        addresses[i],
         abi,
         signer
       );
