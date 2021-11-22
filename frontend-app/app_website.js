@@ -1,3 +1,4 @@
+$('#loadcircle').hide();
 const forwarderOrigin = 'http://localhost:9010'
 const URL1 = "https://api.redstone.finance/prices?symbol=MXNUSD=X&provider=redstone-stocks&limit=1";
 const URL2 = "https://api.redstone.finance/prices?symbol=ETH&provider=redstone&limit=1";
