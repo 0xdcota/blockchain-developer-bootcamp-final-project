@@ -87,6 +87,9 @@ module.exports = async function (deployer, network, accounts) {
                                     .wrap(ethersmockoracle)
                                     .usingPriceFeed("redstone-stocks");
               
- await wrappedEthersMockOracle.authorizeProvider();
+ let tx = await wrappedEthersMockOracle.authorizeProvider();
+ await tx.wait();
+ const price = await wrappedEthersMockOracle.redstoneGetLastPrice();
+ console.log('redstone price',price.toString());
                     
 };
