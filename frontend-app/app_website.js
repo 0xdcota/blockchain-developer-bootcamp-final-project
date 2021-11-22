@@ -48,6 +48,7 @@ const addressespath = "./frontend-app/deployed_addresses.json";
 
 let provider;
 let signer;
+let chainId;
 let accounts;
 let accountant;
 let coinhouse;
@@ -93,6 +94,15 @@ const redstoneAuthorize = async(wrappedContract) => {
   let authTx = await wrappedContract.authorizeProvider();
   let receipt = await authTx.wait(); 
   console.log("authorizeProvider OK", receipt);
+}
+
+// Website
+function handleChain(_chainId) {
+  // We recommend reloading the page, unless you must do otherwise
+  if(_chainId != 42) {
+    alert('Switch to Kovan TestNet!');
+    window.location.reload();
+  }
 }
 
 // Get View Functions
@@ -255,6 +265,7 @@ const getAllUpdateView = async () => {
 // Interaction Functions
 
 const getMockWETHFaucet = async () => {
+  $('#loadcircle').show();
   try {
     const faucetTX = await mockweth.getFromFaucet();
     console.log('getMockFaucet, Txhash', faucetTX);
@@ -263,9 +274,11 @@ const getMockWETHFaucet = async () => {
     await getAllUpdateView();
     alert('Successful Transaction!');
   } catch (error) {
-    alert('Faucet Failed! '+error.data.message);
+    alert('Faucet Failed!');
+    console.log(error);
+    $('#loadcircle').hide();
   }
-
+  $('#loadcircle').hide();
 }
 
 const approveERC20 = async () => {
@@ -283,7 +296,8 @@ const approveERC20 = async () => {
       console.log('approval TxHash', approvaltx);
       await depositReserve(inputVal);
     } catch (error) {
-      alert(`ERC20 Approval Failed! ${error.data.message}`);
+      alert(`ERC20 Approval Failed!`);
+      console.log(error);
       $('#loadcircle').hide();
     }
   }
@@ -298,7 +312,8 @@ const depositReserve = async (amount) => {
     await getAllUpdateView();
     alert('Successful Transaction!');
   } catch (error) {
-    alert(`Deposit Failed! ${error.data.message}`);
+    alert(`Deposit Failed!`);
+    console.log(error);
     $('#loadcircle').hide();
   }
   $('#loadcircle').hide();
@@ -326,7 +341,8 @@ const withdrawReserve = async () => {
         await getAllUpdateView();
         alert('Successful Transaction!');
       } catch (error) {
-        alert(`Withdraw Failed! ${error.data.message}`);
+        alert(`Withdraw Failed!`);
+        console.log(error);
         $('#loadcircle').hide();
       }
       $('#loadcircle').hide();
@@ -360,7 +376,8 @@ const mintEfiat = async () => {
           await getAllUpdateView();
           alert('Successful Transaction!');
         } catch (error) {
-          alert(`mintEfiat Failed! ${error.data.message}`);
+          alert(`mintEfiat Failed!`);
+          console.log(error);
           $('#loadcircle').hide(); 
         }
         $('#loadcircle').hide();
@@ -387,7 +404,8 @@ const paybackEfiat = async () => {
       await getAllUpdateView();
       alert("Succesful Transaction!");
     } catch (error) {
-      alert(`Payback Failed! ${error.data.message}`);
+      alert(`Payback Failed!`);
+      console.log(error);
       $('#loadcircle').hide();
     }
     $('#loadcircle').hide();
@@ -451,6 +469,7 @@ const initialize = async() => {
 
   // Will connect to metamask
   const onClickConnect = async () => {
+    handleChain(chainId);
     try {
       // Will open the MetaMask UI
       // You should disable this button while the request is pending!
@@ -463,7 +482,8 @@ const initialize = async() => {
 
   /// Application running
   MetaMaskClientCheck();
-  accounts = await ethereum.request({ method: 'eth_requestAccounts' });  
+  accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+  chainId = await ethereum.request({ method: 'eth_chainId' });
 }
 
 window.addEventListener('DOMContentLoaded', initialize);
@@ -474,5 +494,10 @@ withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
 // triggerOnChainButton.onclick = getOnChainOraclePrice;
+
+ethereum.on('chainChanged', (chainId) => {
+  handleChain(chainId);
+});
+
 
 

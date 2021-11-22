@@ -258,6 +258,7 @@ const getAllUpdateView = async () => {
 // Interaction Functions
 
 const getMockWETHFaucet = async () => {
+  $('#loadcircle').show();
   try {
     const faucetTX = await mockweth.getFromFaucet();
     console.log('getMockFaucet, Txhash', faucetTX);
@@ -267,8 +268,9 @@ const getMockWETHFaucet = async () => {
     alert('Successful Transaction!');
   } catch (error) {
     alert('Faucet Failed! '+error.data.message);
+    $('#loadcircle').hide();
   }
-
+  $('#loadcircle').hide();
 }
 
 const approveERC20 = async () => {
@@ -479,5 +481,4 @@ withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
 // triggerOnChainButton.onclick = getOnChainOraclePrice;
-
 
