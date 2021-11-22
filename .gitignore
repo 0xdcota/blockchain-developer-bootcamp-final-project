@@ -6,3 +6,6 @@
 
 # production
 /build/contracts/*
+
+# secrets
+secrets.json

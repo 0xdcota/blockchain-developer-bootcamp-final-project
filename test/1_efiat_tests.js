@@ -48,6 +48,15 @@ describe('efiat Sytem Tests', function () {
         rid = await reservehouse.reserveTokenID();
         bid = await reservehouse.backedTokenID();
 
+        // Load first accounts with mockweth
+        for(let i =0; i < 7; i++) {
+            await mockweth.deposit(
+                {
+                    from: accounts[i],
+                    value: web3.utils.toWei("20", "ether")
+                });
+        }
+
         snapshotId = takeSnapshot();
     });
 

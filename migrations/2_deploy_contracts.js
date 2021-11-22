@@ -30,16 +30,7 @@ module.exports = async function (deployer, network, accounts) {
   // 1.- Set oracle price in oracle mock
   await mockoracle.setPrice(web3.utils.toWei("90500", "ether"));
 
-  // 2.- Load first 5 accounts with mockweth
-  for(let i =0; i < 7; i++) {
-    await mockweth.deposit(
-        {
-            from: accounts[i],
-            value: web3.utils.toWei("20", "ether")
-        });
-  }
-
-  // 3.- Initialize house contracts and register with accountant
+  // 2.- Initialize house contracts and register with accountant
   await coinhouse.initialize(
     fiat.address,
     accountant.address,
