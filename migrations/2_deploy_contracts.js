@@ -62,6 +62,7 @@ module.exports = async function (deployer, network, accounts) {
   // 5.1 Build ethers.js contract instance
   const provider = new ethers.providers.JsonRpcProvider();
   const signer = provider.getSigner();
+  console.log(signer);
 
   const mockOraclesimpleABI = [
     "function trackingAssetSymbol() view returns (string)",
@@ -70,10 +71,10 @@ module.exports = async function (deployer, network, accounts) {
     "function getLastPrice() view returns (uint)",
     "function setPrice(uint newPrice)",
     "function redstoneGetLastPrice() view returns (uint)",
-    "function maxDelay() view (uint)",
+    "function maxDelay() view returns (uint)",
     "function trustedSigner() view returns (address)",
-    "funtion setMaxDelay(uint256 _maxDelay)",
-    "function authorizeSigner(address _trustedSigner)",
+    "function setMaxDelay(uint maxDelay)",
+    "function authorizeSigner(address trustedSigner)"
   ];
   
   const ethersmockoracle = new ethers.Contract(
