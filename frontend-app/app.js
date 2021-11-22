@@ -85,7 +85,7 @@ const getLastMigration = (artifact) => {
 
 const redstoneWrap = (contract) => {
   return redstoneFlashStorage.WrapperBuilder
-  .wrap(contract)
+  .wrapLite(contract)
   .usingPriceFeed("redstone-stocks");
 }
 
