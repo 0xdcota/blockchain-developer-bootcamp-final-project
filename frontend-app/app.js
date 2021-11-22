@@ -230,8 +230,9 @@ const getOraclePrices = async () => {
 const getOnChainOraclePrice = async () => {
   try {
     let wmockoracle = redstoneWrap(mockoracle);
-    await redstoneAuthorize(wmockoracle);
+    // await redstoneAuthorize(wmockoracle); // authorization already done in ./../migrations/2_deploy_contracts.js
     let price = await wmockoracle.redstoneGetLastPrice();
+    console.log(price.toString());
     onChainPrice.innerHTML = price.toFixed(8);  
   } catch (error) {
     console.log("failed getOnChainOraclePrice");
@@ -475,6 +476,6 @@ depositButton.onclick = approveERC20;
 withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
-// triggerOnChainButton.onclick = getOnChainOraclePrice;
+triggerOnChainButton.onclick = getOnChainOraclePrice;
 
 
