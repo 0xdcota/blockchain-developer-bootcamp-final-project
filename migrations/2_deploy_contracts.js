@@ -62,7 +62,6 @@ module.exports = async function (deployer, network, accounts) {
   // 5.1 Build ethers.js contract instance
   const provider = new ethers.providers.JsonRpcProvider();
   const signer = provider.getSigner();
-  console.log(signer);
 
   const mockOraclesimpleABI = [
     "function trackingAssetSymbol() view returns (string)",

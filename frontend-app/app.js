@@ -227,13 +227,23 @@ const getOraclePrices = async () => {
   }
 }
 
+const syncTime = async function () {
+  const now = Math.ceil(new Date().getTime() / 1000);
+  try {
+    await ethers.provider.send('evm_setNextBlockTimestamp', [now]);
+  } catch (error) {
+    //Skipping time sync - block is ahead of current time
+  }
+}
+
 const getOnChainOraclePrice = async () => {
   try {
     let wmockoracle = redstoneWrap(mockoracle);
+    await syncTime();
     // await redstoneAuthorize(wmockoracle); // authorization already done in ./../migrations/2_deploy_contracts.js
     let price = await wmockoracle.redstoneGetLastPrice();
     console.log(price.toString());
-    onChainPrice.innerHTML = price.toFixed(8);  
+    onChainPrice.innerHTML = price.toString();  
   } catch (error) {
     console.log("failed getOnChainOraclePrice");
     console.log(error);
