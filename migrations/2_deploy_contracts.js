@@ -7,6 +7,7 @@ const MockWETH = artifacts.require("MockWETH");
 
 module.exports = async function (deployer, network, accounts) {
 
+  const { ethers } = require("ethers");
   const { WrapperBuilder } = require("redstone-flash-storage");
 
   await deployer.deploy(AssetsAccountant);
@@ -57,9 +58,37 @@ module.exports = async function (deployer, network, accounts) {
   await fiat.grantRole(minter, coinhouse.address);
   await fiat.grantRole(burner, coinhouse.address);
 
-  // Authorize Provider
-  // mockoracle = WrapperBuilder.wrapLite(mockoracle).usingPriceFeed("redstone-stocks");
-  // // console.log(mockoracle);
-  // await mockoracle.authorizeSigner('0x926E370fD53c23f8B71ad2B3217b227E41A92b12');
+  // 5. Authorize Provider
+  // 5.1 Build ethers.js contract instance
+  const provider = new ethers.providers.JsonRpcProvider();
+  const signer = provider.getSigner();
+
+  const mockOraclesimpleABI = [
+    "function trackingAssetSymbol() view returns (string)",
+    "function lastPrice() view returns (uint)",
+    "function oraclePriceDecimals() view returns (uint)",
+    "function getLastPrice() view returns (uint)",
+    "function setPrice(uint newPrice)",
+    "function redstoneGetLastPrice() view returns (uint)",
+    "function maxDelay() view returns (uint)",
+    "function trustedSigner() view returns (address)",
+    "function setMaxDelay(uint maxDelay)",
+    "function authorizeSigner(address trustedSigner)"
+  ];
+  
+  const ethersmockoracle = new ethers.Contract(
+    mockoracle.address,
+    mockOraclesimpleABI,
+    signer
+  );
+
+  const wrappedEthersMockOracle = WrapperBuilder
+                                    .wrapLite(ethersmockoracle)
+                                    .usingPriceFeed("redstone-stocks");
+              
+ let tx = await wrappedEthersMockOracle.authorizeProvider();
+ await tx.wait();
+ const price = await wrappedEthersMockOracle.redstoneGetLastPrice();
+ console.log('redstone price',price.toString());
                     
 };

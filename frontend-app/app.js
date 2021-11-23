@@ -85,7 +85,7 @@ const getLastMigration = (artifact) => {
 
 const redstoneWrap = (contract) => {
   return redstoneFlashStorage.WrapperBuilder
-  .wrap(contract)
+  .wrapLite(contract)
   .usingPriceFeed("redstone-stocks");
 }
 
@@ -227,12 +227,23 @@ const getOraclePrices = async () => {
   }
 }
 
+const syncTime = async function () {
+  const now = Math.ceil(new Date().getTime() / 1000);
+  try {
+    await ethers.provider.send('evm_setNextBlockTimestamp', [now]);
+  } catch (error) {
+    //Skipping time sync - block is ahead of current time
+  }
+}
+
 const getOnChainOraclePrice = async () => {
   try {
     let wmockoracle = redstoneWrap(mockoracle);
-    await redstoneAuthorize(wmockoracle);
+    await syncTime();
+    // await redstoneAuthorize(wmockoracle); // authorization already done in ./../migrations/2_deploy_contracts.js
     let price = await wmockoracle.redstoneGetLastPrice();
-    onChainPrice.innerHTML = price.toFixed(8);  
+    console.log(price.toString());
+    onChainPrice.innerHTML = price.toString();  
   } catch (error) {
     console.log("failed getOnChainOraclePrice");
     console.log(error);
@@ -475,6 +486,6 @@ depositButton.onclick = approveERC20;
 withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
-// triggerOnChainButton.onclick = getOnChainOraclePrice;
+triggerOnChainButton.onclick = getOnChainOraclePrice;
 
 
