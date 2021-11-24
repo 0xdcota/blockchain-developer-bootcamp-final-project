@@ -8,7 +8,19 @@
 <body>
   <h1>Efiat.world</h1>
   <h3>System for digital backed currencies</h3> 
+  <p>Disclaimer: This project was developed as a proof of concept and submitted as final project for the Consensys Blockchain Developer Bootcamp. </p>
+  <p>The contents in this project are not complete and not intended for a production environment.</p>
   <div id="loadcircle"></div>
+  <hr>
+  <div>
+    <h3>How does it work?</h3>
+    <ol>
+      <li>Get some mockWeth using the Faucet below</li>
+      <li>Deposit some mockWeth into the House Of Reserves contract</li>
+      <li>Mint some efiat pesos by entering amount in the House Of Coin contract</li>
+      <li>voila!</li>
+    </ol>
+  </div>
   <hr>
   <div class="metamask" >
     <button id="connectButton">Connect</button>
@@ -47,12 +59,11 @@
       </label>
     </div>
     <div class="row3">
-      <input id="wethDepositInput" type="text" placeholder="amount to deposit (wad)" />
-      <button id="approveButton">Approve ERC20</button>
+      <input id="wethDepositInput" type="text" placeholder="amount to deposit (weth units)"/>
       <button id="depositButton">Deposit in Reserve</button>
     </div>
     <div class="row4">
-      <input id="wethWithdrawInput" type="text" placeholder="amount to withdraw (wad)" />
+      <input id="wethWithdrawInput" type="text" placeholder="amount to withdraw (weth units)"/>
       <button id="withdrawButton">Withdraw from Reserve</button>
     </div>
   </div>
@@ -62,7 +73,7 @@
       <h3>House of Coin Minting</h3>
     </div>
     <div class="row2">
-      <h4>Backed Asset to Mint: efiat</h4> 
+      <h4>Backed Asset to Mint: efiat [<span id="efiatAddr"></span>]</h4> 
       <p>($efiat assumed to represent $MXN for demonstration purposes.)</p>
       <label>
         Current Wallet Balance: $ <span id="mockEfiatBalance"></span> efiat
@@ -77,12 +88,11 @@
       </label>
     </div>
     <div class="row3">
-      <input id="efiatMintInput" type="text" placeholder="amount to mint (wad)" />
-      <input id="reserveAddrToUse" type="text" style="width: 300px;" placeholder="address of reserve asset to use" />
+      <input id="efiatMintInput" type="text" placeholder="amount to mint (currency unit)" />
       <button id="mintButton">Mint efiat and Lock Reserve</button>
     </div>
     <div class="row4">
-      <input id="efiatPaybackInput" type="text" placeholder="amount to burn (wad)" />
+      <input id="efiatPaybackInput" type="text" placeholder="amount to payback (currency unit)" />
       <button id="paybackButton">Payback efiat and Unlock Reserve</button>
     </div>
   </div>
@@ -98,19 +108,21 @@
       </label>
       <br>
       <label>
-        usd/WETH: $ <span id="oraclePrice2"></span> 
+        usd/ETH: $ <span id="oraclePrice2"></span> 
       </label>
       <br>
       <label>
-        eFiat/WETH: $ <span id="oraclePrice3"></span> 
+        eFiat/ETH: $ <span id="oraclePrice3"></span> 
       </label>
       <br>
       <p>Fetched on-chain</p>
       <button id="triggerOnChain">Get On-Chain</button>
       <label>
-        usd/efiat: $ <span id="onChainPrice"></span> 
+        efiat/ETH: $ <span id="onChainPrice"></span> 
       </label>
     </div>
+    <hr>
+    <p>Check Efiat.World Github Source Code: <a href="https://github.com/DaigaroCota/blockchain-developer-bootcamp-final-project"></a></p>
   </div>
 
   <script src="node_modules/@metamask/onboarding/dist/metamask-onboarding.bundle.js" defer></script>
