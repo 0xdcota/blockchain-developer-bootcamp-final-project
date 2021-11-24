@@ -1,0 +1,969 @@
+{
+  "contractName": "IHouseOfReserveState",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "reserveAsset",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "backedAsset",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "reserveTokenID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "HOUSE_TYPE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "collateralRatio",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "numerator",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "denominator",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IHouseOfReserveState.Factor",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"HOUSE_TYPE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"backedAsset\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"collateralRatio\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"numerator\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"denominator\",\"type\":\"uint256\"}],\"internalType\":\"struct IHouseOfReserveState.Factor\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reserveAsset\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reserveTokenID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"HOUSE_TYPE()\":{\"details\":\"Returns the type of House Contract.\"},\"backedAsset()\":{\"details\":\"Returns the backedAsset of this HouseOfReserve.\"},\"collateralRatio()\":{\"details\":\"Returns the collateralizationRatio of a HouseOfReserve.\"},\"reserveAsset()\":{\"details\":\"Returns the reserveAsset of this HouseOfReserve.\"},\"reserveTokenID()\":{\"details\":\"Returns the reserveTokenID (used in {AssetsAccountant}) in HouseOfReserve.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/interfaces/IHouseOfReserveState.sol\":\"IHouseOfReserveState\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/interfaces/IHouseOfReserveState.sol\":{\"keccak256\":\"0x7cb7594fd725732bb9a7d07aa47e10913663346564e3b228af0c0094672ba61c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://92d056c6cd23b96bed89c2cf9d2bae2082096128cac64c66a7862ecd611f08ee\",\"dweb:/ipfs/Qmem452xjTHYPR7tGnprAjQa33a2FxztrQz142B3WDQTuy\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.8.2;\r\n\r\ninterface IHouseOfReserveState {\r\n\r\n    struct Factor{\r\n        uint numerator;\r\n        uint denominator;\r\n    }\r\n\r\n    /**\r\n     * @dev Returns the reserveAsset of this HouseOfReserve.\r\n     */\r\n    function reserveAsset() external view returns(address);\r\n\r\n    /**\r\n     * @dev Returns the backedAsset of this HouseOfReserve.\r\n     */\r\n    function backedAsset() external view returns(address);\r\n\r\n    /**\r\n     * @dev Returns the reserveTokenID (used in {AssetsAccountant}) in HouseOfReserve.\r\n     */\r\n    function reserveTokenID() external view returns(uint);\r\n\r\n    /**\r\n    * @dev Returns the type of House Contract.\r\n    */\r\n    function HOUSE_TYPE() external returns(bytes32);\r\n\r\n    /**\r\n     * @dev Returns the collateralizationRatio of a HouseOfReserve.\r\n     */\r\n    function collateralRatio() external view returns(Factor memory);\r\n\r\n}",
+  "sourcePath": "C:\\Users\\DCota\\Documents\\Crypto\\Consensys Blockchain Developer\\blockchain-developer-bootcamp-final-project\\contracts\\interfaces\\IHouseOfReserveState.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/interfaces/IHouseOfReserveState.sol",
+    "exportedSymbols": {
+      "IHouseOfReserveState": [
+        5262
+      ]
+    },
+    "id": 5263,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5225,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:22:30"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 5262,
+        "linearizedBaseContracts": [
+          5262
+        ],
+        "name": "IHouseOfReserveState",
+        "nameLocation": "69:20:30",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "IHouseOfReserveState.Factor",
+            "id": 5230,
+            "members": [
+              {
+                "constant": false,
+                "id": 5227,
+                "mutability": "mutable",
+                "name": "numerator",
+                "nameLocation": "128:9:30",
+                "nodeType": "VariableDeclaration",
+                "scope": 5230,
+                "src": "123:14:30",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5226,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "123:4:30",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5229,
+                "mutability": "mutable",
+                "name": "denominator",
+                "nameLocation": "153:11:30",
+                "nodeType": "VariableDeclaration",
+                "scope": 5230,
+                "src": "148:16:30",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5228,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "148:4:30",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Factor",
+            "nameLocation": "106:6:30",
+            "nodeType": "StructDefinition",
+            "scope": 5262,
+            "src": "99:73:30",
+            "visibility": "public"
+          },
+          {
+            "documentation": {
+              "id": 5231,
+              "nodeType": "StructuredDocumentation",
+              "src": "180:74:30",
+              "text": " @dev Returns the reserveAsset of this HouseOfReserve."
+            },
+            "functionSelector": "f85cb5c8",
+            "id": 5236,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "reserveAsset",
+            "nameLocation": "269:12:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5232,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "281:2:30"
+            },
+            "returnParameters": {
+              "id": 5235,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5234,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5236,
+                  "src": "306:7:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5233,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "306:7:30",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "305:9:30"
+            },
+            "scope": 5262,
+            "src": "260:55:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5237,
+              "nodeType": "StructuredDocumentation",
+              "src": "323:73:30",
+              "text": " @dev Returns the backedAsset of this HouseOfReserve."
+            },
+            "functionSelector": "a52e7d70",
+            "id": 5242,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "backedAsset",
+            "nameLocation": "411:11:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5238,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "422:2:30"
+            },
+            "returnParameters": {
+              "id": 5241,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5240,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5242,
+                  "src": "447:7:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5239,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "447:7:30",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "446:9:30"
+            },
+            "scope": 5262,
+            "src": "402:54:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5243,
+              "nodeType": "StructuredDocumentation",
+              "src": "464:100:30",
+              "text": " @dev Returns the reserveTokenID (used in {AssetsAccountant}) in HouseOfReserve."
+            },
+            "functionSelector": "8f429cd0",
+            "id": 5248,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "reserveTokenID",
+            "nameLocation": "579:14:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5244,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "593:2:30"
+            },
+            "returnParameters": {
+              "id": 5247,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5246,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5248,
+                  "src": "618:4:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5245,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "618:4:30",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "617:6:30"
+            },
+            "scope": 5262,
+            "src": "570:54:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5249,
+              "nodeType": "StructuredDocumentation",
+              "src": "632:59:30",
+              "text": " @dev Returns the type of House Contract."
+            },
+            "functionSelector": "20a2fe2c",
+            "id": 5254,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "HOUSE_TYPE",
+            "nameLocation": "706:10:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5250,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "716:2:30"
+            },
+            "returnParameters": {
+              "id": 5253,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5252,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5254,
+                  "src": "736:7:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 5251,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "736:7:30",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "735:9:30"
+            },
+            "scope": 5262,
+            "src": "697:48:30",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5255,
+              "nodeType": "StructuredDocumentation",
+              "src": "753:81:30",
+              "text": " @dev Returns the collateralizationRatio of a HouseOfReserve."
+            },
+            "functionSelector": "b4eae1cb",
+            "id": 5261,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "collateralRatio",
+            "nameLocation": "849:15:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5256,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "864:2:30"
+            },
+            "returnParameters": {
+              "id": 5260,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5259,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5261,
+                  "src": "889:13:30",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Factor_$5230_memory_ptr",
+                    "typeString": "struct IHouseOfReserveState.Factor"
+                  },
+                  "typeName": {
+                    "id": 5258,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5257,
+                      "name": "Factor",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 5230,
+                      "src": "889:6:30"
+                    },
+                    "referencedDeclaration": 5230,
+                    "src": "889:6:30",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Factor_$5230_storage_ptr",
+                      "typeString": "struct IHouseOfReserveState.Factor"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "888:15:30"
+            },
+            "scope": 5262,
+            "src": "840:64:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5263,
+        "src": "59:850:30"
+      }
+    ],
+    "src": "33:876:30"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/interfaces/IHouseOfReserveState.sol",
+    "exportedSymbols": {
+      "IHouseOfReserveState": [
+        5262
+      ]
+    },
+    "id": 5263,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5225,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:22:30"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 5262,
+        "linearizedBaseContracts": [
+          5262
+        ],
+        "name": "IHouseOfReserveState",
+        "nameLocation": "69:20:30",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "IHouseOfReserveState.Factor",
+            "id": 5230,
+            "members": [
+              {
+                "constant": false,
+                "id": 5227,
+                "mutability": "mutable",
+                "name": "numerator",
+                "nameLocation": "128:9:30",
+                "nodeType": "VariableDeclaration",
+                "scope": 5230,
+                "src": "123:14:30",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5226,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "123:4:30",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5229,
+                "mutability": "mutable",
+                "name": "denominator",
+                "nameLocation": "153:11:30",
+                "nodeType": "VariableDeclaration",
+                "scope": 5230,
+                "src": "148:16:30",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5228,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "148:4:30",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Factor",
+            "nameLocation": "106:6:30",
+            "nodeType": "StructDefinition",
+            "scope": 5262,
+            "src": "99:73:30",
+            "visibility": "public"
+          },
+          {
+            "documentation": {
+              "id": 5231,
+              "nodeType": "StructuredDocumentation",
+              "src": "180:74:30",
+              "text": " @dev Returns the reserveAsset of this HouseOfReserve."
+            },
+            "functionSelector": "f85cb5c8",
+            "id": 5236,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "reserveAsset",
+            "nameLocation": "269:12:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5232,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "281:2:30"
+            },
+            "returnParameters": {
+              "id": 5235,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5234,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5236,
+                  "src": "306:7:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5233,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "306:7:30",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "305:9:30"
+            },
+            "scope": 5262,
+            "src": "260:55:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5237,
+              "nodeType": "StructuredDocumentation",
+              "src": "323:73:30",
+              "text": " @dev Returns the backedAsset of this HouseOfReserve."
+            },
+            "functionSelector": "a52e7d70",
+            "id": 5242,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "backedAsset",
+            "nameLocation": "411:11:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5238,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "422:2:30"
+            },
+            "returnParameters": {
+              "id": 5241,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5240,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5242,
+                  "src": "447:7:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5239,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "447:7:30",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "446:9:30"
+            },
+            "scope": 5262,
+            "src": "402:54:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5243,
+              "nodeType": "StructuredDocumentation",
+              "src": "464:100:30",
+              "text": " @dev Returns the reserveTokenID (used in {AssetsAccountant}) in HouseOfReserve."
+            },
+            "functionSelector": "8f429cd0",
+            "id": 5248,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "reserveTokenID",
+            "nameLocation": "579:14:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5244,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "593:2:30"
+            },
+            "returnParameters": {
+              "id": 5247,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5246,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5248,
+                  "src": "618:4:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5245,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "618:4:30",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "617:6:30"
+            },
+            "scope": 5262,
+            "src": "570:54:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5249,
+              "nodeType": "StructuredDocumentation",
+              "src": "632:59:30",
+              "text": " @dev Returns the type of House Contract."
+            },
+            "functionSelector": "20a2fe2c",
+            "id": 5254,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "HOUSE_TYPE",
+            "nameLocation": "706:10:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5250,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "716:2:30"
+            },
+            "returnParameters": {
+              "id": 5253,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5252,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5254,
+                  "src": "736:7:30",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 5251,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "736:7:30",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "735:9:30"
+            },
+            "scope": 5262,
+            "src": "697:48:30",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5255,
+              "nodeType": "StructuredDocumentation",
+              "src": "753:81:30",
+              "text": " @dev Returns the collateralizationRatio of a HouseOfReserve."
+            },
+            "functionSelector": "b4eae1cb",
+            "id": 5261,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "collateralRatio",
+            "nameLocation": "849:15:30",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5256,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "864:2:30"
+            },
+            "returnParameters": {
+              "id": 5260,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5259,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5261,
+                  "src": "889:13:30",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Factor_$5230_memory_ptr",
+                    "typeString": "struct IHouseOfReserveState.Factor"
+                  },
+                  "typeName": {
+                    "id": 5258,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 5257,
+                      "name": "Factor",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 5230,
+                      "src": "889:6:30"
+                    },
+                    "referencedDeclaration": 5230,
+                    "src": "889:6:30",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Factor_$5230_storage_ptr",
+                      "typeString": "struct IHouseOfReserveState.Factor"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "888:15:30"
+            },
+            "scope": 5262,
+            "src": "840:64:30",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5263,
+        "src": "59:850:30"
+      }
+    ],
+    "src": "33:876:30"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.2+commit.661d1103.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-11-22T01:32:54.029Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "HOUSE_TYPE()": {
+        "details": "Returns the type of House Contract."
+      },
+      "backedAsset()": {
+        "details": "Returns the backedAsset of this HouseOfReserve."
+      },
+      "collateralRatio()": {
+        "details": "Returns the collateralizationRatio of a HouseOfReserve."
+      },
+      "reserveAsset()": {
+        "details": "Returns the reserveAsset of this HouseOfReserve."
+      },
+      "reserveTokenID()": {
+        "details": "Returns the reserveTokenID (used in {AssetsAccountant}) in HouseOfReserve."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

@@ -47,7 +47,7 @@ const contractpaths = [
   "./../build/contracts/MockWETH.json"
 ]
 
-// const addressespath = "./frontend-app/deployed_addresses.json";
+const addressespath = "./frontend-app/deployed_addresses.json";
 
 let provider;
 let signer;
@@ -66,14 +66,14 @@ let mockweth;
 
 const loadContracts = async (paths, signer) => {
   let contractCollector = new Array(paths.length);
-  // const addresses = await $.getJSON(addressespath);
+  const addresses = await $.getJSON(addressespath);
   for (let i = 0; i < paths.length; i++) {
-      let json = await $.getJSON(paths[i]);
-      let abi = json.abi;
-      let lastMigration = getLastMigration(json);
+      let contractjson = await $.getJSON(paths[i]);
+      let abi = contractjson.abi;
+      // let lastMigration = getLastMigration(json);
       let contract = new ethers.Contract(
-        lastMigration.address,
-        // addresses[i],
+        // lastMigration.address,
+        addresses[i],
         abi,
         signer
       );
@@ -91,7 +91,7 @@ const getLastMigration = (artifact) => {
 
 const redstoneWrap = (contract) => {
   return redstoneFlashStorage.WrapperBuilder
-  .wrapLite(contract)
+  .wrap(contract)
   .usingPriceFeed("redstone-stocks");
 }
 
@@ -105,8 +105,8 @@ const redstoneAuthorize = async(wrappedContract) => {
 function handleChain(_chainId) {
   // We recommend reloading the page, unless you must do otherwise
   if(_chainId != 42) {
-    // alert('Switch to Kovan TestNet!');
-    alert('Switch to Localhost Network!');
+    alert('Switch to Kovan TestNet!');
+    // alert('Switch to Localhost Network!');
     window.location.reload();
   }
 }
@@ -244,14 +244,14 @@ const getOraclePrices = async () => {
   }
 }
 
-const syncTime = async function () {
-  const now = Math.ceil(new Date().getTime() / 1000);
-  try {
-    await ethers.provider.send('evm_setNextBlockTimestamp', [now]);
-  } catch (error) {
-    //Skipping time sync - block is ahead of current time
-  }
-}
+// const syncTime = async function () {
+//   const now = Math.ceil(new Date().getTime() / 1000);
+//   try {
+//     await ethers.provider.send('evm_setNextBlockTimestamp', [now]);
+//   } catch (error) {
+//     //Skipping time sync - block is ahead of current time
+//   }
+// }
 
 const getOnChainOraclePrice = async () => {
   try {
