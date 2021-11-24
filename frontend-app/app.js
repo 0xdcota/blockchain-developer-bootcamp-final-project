@@ -46,8 +46,12 @@ const contractpaths = [
   "./../build/contracts/MockeFiat.json",
   "./../build/contracts/MockWETH.json"
 ]
+
+// const addressespath = "./frontend-app/deployed_addresses.json";
+
 let provider;
 let signer;
+let chainId;
 let accounts;
 let accountant;
 let coinhouse;
@@ -62,12 +66,14 @@ let mockweth;
 
 const loadContracts = async (paths, signer) => {
   let contractCollector = new Array(paths.length);
+  // const addresses = await $.getJSON(addressespath);
   for (let i = 0; i < paths.length; i++) {
       let json = await $.getJSON(paths[i]);
       let abi = json.abi;
       let lastMigration = getLastMigration(json);
       let contract = new ethers.Contract(
         lastMigration.address,
+        // addresses[i],
         abi,
         signer
       );
@@ -93,6 +99,16 @@ const redstoneAuthorize = async(wrappedContract) => {
   let authTx = await wrappedContract.authorizeProvider();
   let receipt = await authTx.wait(); 
   console.log("authorizeProvider OK", receipt);
+}
+
+// Website
+function handleChain(_chainId) {
+  // We recommend reloading the page, unless you must do otherwise
+  if(_chainId != 42) {
+    // alert('Switch to Kovan TestNet!');
+    alert('Switch to Localhost Network!');
+    window.location.reload();
+  }
 }
 
 // Get View Functions
@@ -266,6 +282,7 @@ const getAllUpdateView = async () => {
 // Interaction Functions
 
 const getMockWETHFaucet = async () => {
+  $('#loadcircle').show();
   try {
     const faucetTX = await mockweth.getFromFaucet();
     console.log('getMockFaucet, Txhash', faucetTX);
@@ -276,8 +293,9 @@ const getMockWETHFaucet = async () => {
   } catch (error) {
     alert('Faucet Failed!');
     console.log(error);
+    $('#loadcircle').hide();
   }
-
+  $('#loadcircle').hide();
 }
 
 const holdTime = (ms) => {
@@ -356,7 +374,6 @@ const withdrawReserve = async () => {
   }
 }
     
-
 const mintEfiat = async () => {
   let inputVal = document.getElementById("efiatMintInput").value;
   if(!inputVal) {
@@ -386,7 +403,6 @@ const mintEfiat = async () => {
     $('#loadcircle').hide();
   }
 }
-
 
 const paybackEfiat = async () => {
   let inputVal = document.getElementById("efiatPaybackInput").value;
@@ -473,6 +489,7 @@ const initialize = async() => {
 
   // Will connect to metamask
   const onClickConnect = async () => {
+    handleChain(chainId);
     try {
       // Will open the MetaMask UI
       // You should disable this button while the request is pending!
@@ -485,7 +502,8 @@ const initialize = async() => {
 
   /// Application running
   MetaMaskClientCheck();
-  accounts = await ethereum.request({ method: 'eth_requestAccounts' });  
+  accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+  chainId = await ethereum.request({ method: 'eth_chainId' });
 }
 
 window.addEventListener('DOMContentLoaded', initialize);
@@ -496,3 +514,7 @@ withdrawButton.onclick = withdrawReserve;
 mintButton.onclick = mintEfiat;
 paybackButton.onclick = paybackEfiat;
 triggerOnChainButton.onclick = getOnChainOraclePrice;
+
+ethereum.on('chainChanged', (chainId) => {
+  handleChain(chainId);
+});
