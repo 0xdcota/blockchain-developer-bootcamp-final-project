@@ -5,7 +5,6 @@
 /node_modules
 
 # production
-/build/contracts/*
 
 # secrets
 secrets.json

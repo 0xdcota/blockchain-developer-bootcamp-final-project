@@ -1,0 +1,395 @@
+{
+  "contractName": "IHouseOfCoinState",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "HOUSE_TYPE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "backedAsset",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"HOUSE_TYPE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"backedAsset\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"HOUSE_TYPE()\":{\"details\":\"Returns the type of House Contract.\"},\"backedAsset()\":{\"details\":\"Returns the backedAsset that is minted by this HouseOfCoin.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/interfaces/IHouseOfCoinState.sol\":\"IHouseOfCoinState\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/interfaces/IHouseOfCoinState.sol\":{\"keccak256\":\"0xde64c5f5af9635292b5acc69ce028adfb4a735805250ad9e7d655467b410d42b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5969921ff52ba7ff86138a8dd7cf38eabf3984c8ab0df9d56c62c1710e0b2761\",\"dweb:/ipfs/QmdTRcqUW3dZ232SVoxL1gFuud3zsn2swoEdyfQuAgCDZG\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.8.2;\r\n\r\ninterface IHouseOfCoinState {\r\n    \r\n    /**\r\n    * @dev Returns the type of House Contract.\r\n    */\r\n    function HOUSE_TYPE() external returns(bytes32);\r\n\r\n    /**\r\n    * @dev Returns the backedAsset that is minted by this HouseOfCoin.\r\n    */\r\n    function backedAsset() external view returns(address);\r\n\r\n}",
+  "sourcePath": "C:\\Users\\DCota\\Documents\\Crypto\\Consensys Blockchain Developer\\blockchain-developer-bootcamp-final-project\\contracts\\interfaces\\IHouseOfCoinState.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/interfaces/IHouseOfCoinState.sol",
+    "exportedSymbols": {
+      "IHouseOfCoinState": [
+        5223
+      ]
+    },
+    "id": 5224,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5210,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:22:29"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 5223,
+        "linearizedBaseContracts": [
+          5223
+        ],
+        "name": "IHouseOfCoinState",
+        "nameLocation": "69:17:29",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "documentation": {
+              "id": 5211,
+              "nodeType": "StructuredDocumentation",
+              "src": "100:59:29",
+              "text": " @dev Returns the type of House Contract."
+            },
+            "functionSelector": "20a2fe2c",
+            "id": 5216,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "HOUSE_TYPE",
+            "nameLocation": "174:10:29",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5212,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "184:2:29"
+            },
+            "returnParameters": {
+              "id": 5215,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5214,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5216,
+                  "src": "204:7:29",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 5213,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "204:7:29",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "203:9:29"
+            },
+            "scope": 5223,
+            "src": "165:48:29",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5217,
+              "nodeType": "StructuredDocumentation",
+              "src": "221:83:29",
+              "text": " @dev Returns the backedAsset that is minted by this HouseOfCoin."
+            },
+            "functionSelector": "a52e7d70",
+            "id": 5222,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "backedAsset",
+            "nameLocation": "319:11:29",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5218,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "330:2:29"
+            },
+            "returnParameters": {
+              "id": 5221,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5220,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5222,
+                  "src": "355:7:29",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5219,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "355:7:29",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "354:9:29"
+            },
+            "scope": 5223,
+            "src": "310:54:29",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5224,
+        "src": "59:310:29"
+      }
+    ],
+    "src": "33:336:29"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/interfaces/IHouseOfCoinState.sol",
+    "exportedSymbols": {
+      "IHouseOfCoinState": [
+        5223
+      ]
+    },
+    "id": 5224,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5210,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:22:29"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 5223,
+        "linearizedBaseContracts": [
+          5223
+        ],
+        "name": "IHouseOfCoinState",
+        "nameLocation": "69:17:29",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "documentation": {
+              "id": 5211,
+              "nodeType": "StructuredDocumentation",
+              "src": "100:59:29",
+              "text": " @dev Returns the type of House Contract."
+            },
+            "functionSelector": "20a2fe2c",
+            "id": 5216,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "HOUSE_TYPE",
+            "nameLocation": "174:10:29",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5212,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "184:2:29"
+            },
+            "returnParameters": {
+              "id": 5215,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5214,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5216,
+                  "src": "204:7:29",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 5213,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "204:7:29",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "203:9:29"
+            },
+            "scope": 5223,
+            "src": "165:48:29",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 5217,
+              "nodeType": "StructuredDocumentation",
+              "src": "221:83:29",
+              "text": " @dev Returns the backedAsset that is minted by this HouseOfCoin."
+            },
+            "functionSelector": "a52e7d70",
+            "id": 5222,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "backedAsset",
+            "nameLocation": "319:11:29",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5218,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "330:2:29"
+            },
+            "returnParameters": {
+              "id": 5221,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5220,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5222,
+                  "src": "355:7:29",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5219,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "355:7:29",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "354:9:29"
+            },
+            "scope": 5223,
+            "src": "310:54:29",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5224,
+        "src": "59:310:29"
+      }
+    ],
+    "src": "33:336:29"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.2+commit.661d1103.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-11-24T20:06:54.737Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "HOUSE_TYPE()": {
+        "details": "Returns the type of House Contract."
+      },
+      "backedAsset()": {
+        "details": "Returns the backedAsset that is minted by this HouseOfCoin."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
