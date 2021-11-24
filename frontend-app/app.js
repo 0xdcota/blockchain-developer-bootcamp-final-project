@@ -239,8 +239,6 @@ const syncTime = async function () {
 const getOnChainOraclePrice = async () => {
   try {
     let wmockoracle = redstoneWrap(mockoracle);
-    await syncTime();
-    // await redstoneAuthorize(wmockoracle); // authorization already done in ./../migrations/2_deploy_contracts.js
     let price = await wmockoracle.redstoneGetLastPrice();
     console.log(price.toString());
     onChainPrice.innerHTML = price.toString();  
@@ -279,11 +277,15 @@ const getMockWETHFaucet = async () => {
 
 }
 
+const holdTime = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const approveERC20 = async () => {
   // Check and read Inputvalue
   let inputVal = document.getElementById("wethDepositInput").value;
   if(!inputVal) {
-    alert("enter deposit amount value!");
+    alert("enter deposit amount value to approve!");
   } else {
     $('#loadcircle').show();
     try {
@@ -292,6 +294,7 @@ const approveERC20 = async () => {
         inputVal
       );
       console.log('approval TxHash', approvaltx);
+      await holdTime(10000);
       await depositReserve(inputVal);
     } catch (error) {
       alert(`ERC20 Approval Failed! ${error.data.message}`);

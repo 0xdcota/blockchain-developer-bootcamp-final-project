@@ -3,49 +3,7 @@
 <head>
   <title>eFiat World</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <style type="text/css">
-    h1 {
-      text-align: center;
-      background-color: rgb(207, 197, 197);
-    }
-    h3, h4 {
-      text-align: center;
-    }
-    body {
-      color: black;
-      background-color: white;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      margin-right: -50%;
-      transform: translate(-50%, -50%) 
-    }
-    label {
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
-    div.oracle_div {
-      text-align: center;
-    }
-    #loadcircle {
-      opacity: 0.1;
-      border: 50px solid #f3f3f3; /* Light grey */
-      border-top: 50px solid #3498db; /* Blue */
-      border-bottom: 50px solid #3498db;
-      border-radius: 50%;
-      position: absolute;
-      top: 25%;
-      left: 30%;
-      width: 200px;
-      height: 200px;
-      animation: spin 2s linear infinite;
-      display: flex;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    </style>
+  <link rel="stylesheet" href="./frontend-app/app_style.css">
 </head>
 <body>
   <h1>Efiat.world</h1>
@@ -90,6 +48,7 @@
     </div>
     <div class="row3">
       <input id="wethDepositInput" type="text" placeholder="amount to deposit (wad)" />
+      <button id="approveButton">Approve ERC20</button>
       <button id="depositButton">Deposit in Reserve</button>
     </div>
     <div class="row4">
