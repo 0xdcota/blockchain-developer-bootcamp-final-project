@@ -37,6 +37,9 @@ contract MockOracle is MockOracleState, PriceAware {
     }
 
     function redstoneGetLastPrice() external view returns(uint) {
-        return getPriceFromMsg(bytes32("MXNUSD=X"));
+        uint usdmxn = getPriceFromMsg(bytes32("MXNUSD=X"));
+        uint usdeth = getPriceFromMsg(bytes32("ETH"));
+        uint mxneth = (usdeth * 1e8) / usdmxn;
+        return mxneth;
     }
 }
