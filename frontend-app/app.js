@@ -102,13 +102,12 @@ const redstoneAuthorize = async(wrappedContract) => {
 }
 
 // Website
-function handleChain(_chainId) {
+const handleChain = (_chainId) => {
   // We recommend reloading the page, unless you must do otherwise
-  if(_chainId != 42) {
-    // alert('Switch to Kovan TestNet!');
-    alert('Switch to Localhost Network!');
+  if(_chainId != 42 && _chainId != 1337) {
+    alert('Switch to Kovan TestNet! or to Localhost if using local development environment');
     window.location.reload();
-  }
+  } 
 }
 
 // Get View Functions
@@ -354,7 +353,7 @@ const withdrawReserve = async () => {
     inputVal = ethers.utils.parseUnits(inputVal.toString(), 18);
     inputValBN = ethers.BigNumber.from(inputVal);
     if (inputValBN.gt(reserveBal)) {
-      alert("cannot withdraw more that reserves!");
+      alert("cannot withdraw more than reserves!");
     } else {
       $('#loadcircle').show();
       try {
@@ -494,7 +493,6 @@ const initialize = async() => {
       // Will open the MetaMask UI
       // You should disable this button while the request is pending!
       getAllUpdateView();
-
     } catch (error) {
       console.error(error);
     }
@@ -516,5 +514,6 @@ paybackButton.onclick = paybackEfiat;
 triggerOnChainButton.onclick = getOnChainOraclePrice;
 
 ethereum.on('chainChanged', (chainId) => {
+  console.log('detected chain change, ChainID:',chainId);
   handleChain(chainId);
 });
