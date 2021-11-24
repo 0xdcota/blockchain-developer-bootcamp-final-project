@@ -66,14 +66,14 @@ let mockweth;
 
 const loadContracts = async (paths, signer) => {
   let contractCollector = new Array(paths.length);
-  // const addresses = await $.getJSON(addressespath);
+  // const addresses = await $.getJSON(addressespath); // CHANGE HERE FOR WEBSITE
   for (let i = 0; i < paths.length; i++) {
       let json = await $.getJSON(paths[i]);
       let abi = json.abi;
       let lastMigration = getLastMigration(json);
       let contract = new ethers.Contract(
         lastMigration.address,
-        // addresses[i],
+        // addresses[i], // CHANGE HERE FOR WEBSITE
         abi,
         signer
       );
