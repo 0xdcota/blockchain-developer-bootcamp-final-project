@@ -274,7 +274,8 @@ const getMockWETHFaucet = async () => {
     await getAllUpdateView();
     alert('Successful Transaction!');
   } catch (error) {
-    alert('Faucet Failed! '+error.data.message);
+    alert('Faucet Failed!');
+    console.log(error);
   }
 
 }
@@ -300,7 +301,8 @@ const approveERC20 = async () => {
       await holdTime(10000);
       await depositReserve(inputVal);
     } catch (error) {
-      alert(`ERC20 Approval Failed! ${error.data.message}`);
+      alert(`ERC20 Approval Failed!`);
+      console.log(error);
       $('#loadcircle').hide();
     }
   }
@@ -315,7 +317,8 @@ const depositReserve = async (amount) => {
     await getAllUpdateView();
     alert('Successful Transaction!');
   } catch (error) {
-    alert(`Deposit Failed! ${error.data.message}`);
+    alert(`Deposit Failed!`);
+    console.log(error);
     $('#loadcircle').hide();
   }
   $('#loadcircle').hide();
@@ -344,7 +347,8 @@ const withdrawReserve = async () => {
         await getAllUpdateView();
         alert('Successful Transaction!');
       } catch (error) {
-        alert(`Withdraw Failed! ${error.data.message}`);
+        alert(`Withdraw Failed!`);
+        console.log(error);
         $('#loadcircle').hide();
       }
       $('#loadcircle').hide();
@@ -364,7 +368,6 @@ const mintEfiat = async () => {
       let inputValBN = ethers.BigNumber.from(inputVal);
       let tokenID = await reservehouse.reserveTokenID();
       let hOfReserve = await accountant.houseOfReserves(tokenID);
-      console.log(reserveAddress,hOfReserve,inputValBN);
       let mintTx = await coinhouse.mintCoin(
         mockweth.address,
         hOfReserve,
@@ -376,7 +379,8 @@ const mintEfiat = async () => {
       await getAllUpdateView();
       alert('Successful Transaction!');
     } catch (error) {
-      alert(`mintEfiat Failed! ${error.data.message}`);
+      alert(`mintEfiat Failed!`);
+      console.log(error);
       $('#loadcircle').hide(); 
     }
     $('#loadcircle').hide();
@@ -404,7 +408,8 @@ const paybackEfiat = async () => {
       await getAllUpdateView();
       alert("Succesful Transaction!");
     } catch (error) {
-      alert(`Payback Failed! ${error.data.message}`);
+      alert(`Payback Failed!`);
+      console.log(error);
       $('#loadcircle').hide();
     }
     $('#loadcircle').hide();
