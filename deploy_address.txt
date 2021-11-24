@@ -1,0 +1,24 @@
+{
+    "networks" : {
+        "kovan":  {
+            "AssetsAccountant" : {
+                "address": "0xbfd28f1232a111793Eff4fCf595Ec83f4f14C56F"
+            },
+            "HouseOfCoin" : {
+                "address" : "0xc2FA7Fe915B5B1D1CaC0A01e28b7c34Ed075FBd2"
+            },
+            "HouseOfReserve" : {
+                "address" : "0xA6747A60BaCeCd8560f0af99EE9b6b2a6B7BDBB4"
+            },
+            "MockOracle" : {
+                "address" : "0x4edadD631D596E0166Ea5c27826e2fcf012732F7"
+            },
+            "MockeFiat" : {
+                "address" : "0xd7848E35DaB907819b106d9a2824C3274c8eE621"
+            },
+            "MockWETH" : {
+                "address" : "0xb3a8599c3f57a7b21693A41e038d34A9E1789283"
+            }
+        }
+    }
+}

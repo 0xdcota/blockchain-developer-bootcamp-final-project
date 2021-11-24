@@ -3,17 +3,18 @@
 ### Consensys Blockchain Developer Project
 November 7, 2021  
 Author: daigaro.eth  
+Visit Live on Kovan [Efiat.World](https://efiatworld.on.fleek.co/)   
 Disclaimer: This project was developed as a proof of concept and submitted as final project for the Consensys Blockchain Developer Bootcamp. The contents in this project are not complete and not intended for a production environment.
 
 ### Electronic currencies for smaller economies
-Although cryptocurrencies of many types already exist, there is fairly a low adoption in developing countries. This project will focus on Latin America (Latam).
-Among the reasons, is that no popular and widely accepted representation of a stablecoin has been created for the currencies in Latam. In this project, a create a simple MVP of a stablecoin system to create electronic versions of currencies in a permisionless way.
+Although cryptocurrencies of many types already exist, there is still a fairly a low adoption in developing countries. With this in mind, this project focuses on a creating a basic buidling block that is missing in Latin America (Latam): a stablecoin pegged to the local fiat currencies.
+In this project, I create a simple MVP of a stablecoin system to create electronic versions of currencies in a permisionless way.
 
 ### Price Oracle 
 One of the barriers for a creating a digital cryptocurrency  that represents a Latam currency is the lack of price oracle feeds for these currencies. For this project, in coordination with [Redstone Finance](https://redstone.finance/), some Latam currency prices were made available. 
 
 ## Set up
-This project uses Node.js, TruffleSuite, Satic-Server, and Metamask browser wallet will be needed to test the application. 
+This project uses Node.js, TruffleSuite, Satic-Server, and Metamask browser wallet. This packages will be required to test the application on a local environment. 
 
 Pre-requisites:
 - Install globally [Static-server](https://yarnpkg.com/package/static-server). `npm install -g ganache-cli`

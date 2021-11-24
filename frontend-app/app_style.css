@@ -1,0 +1,88 @@
+h1 {
+    text-align: center;
+    background-color: rgb(24, 21, 21);
+    margin: 0px;
+    padding: 0px;
+}
+h3, h4 {
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+}
+.image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 20px;
+    width: 100%;
+}
+button {
+    pointer-events: auto;
+    cursor: pointer;
+    color: white;
+    background:  rgb(10, 15, 22);
+    border: 1px solid rgb(255,255,221);
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-family: Verdana;
+    font-size: small;
+    position: relative;
+    display: inline-block;
+}
+button:hover {
+    background:  rgb(32, 41, 53);
+}
+body {
+    font-family: Verdana;
+    color: white;
+    background-color: rgb(26,32,44);
+    position: absolute;
+}
+label {
+    padding-top: 10px;
+}
+input {
+    padding: 2px 2px;
+    color: white;
+    background-color: rgb(10, 15, 22);
+    border: 2px solid rgb(255,255,221);
+    border-radius: 2px;
+    margin: 0px;
+}
+div.oracle_div {
+    text-align: center;
+    padding: 0px;
+}
+a:link, a:visited {
+    background-color: #d4635b;
+    color: white;
+    padding: 5px 5px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+a:hover, a:active {
+    background-color: red;
+}
+#loadcircle {
+    opacity: 0.1;
+    border: 50px solid #f3f3f3; /* Light grey */
+    border-top: 50px solid #3498db; /* Blue */
+    border-bottom: 50px solid #3498db;
+    border-radius: 50%;
+    position: absolute;
+    top: 40%;
+    left: 30%;
+    width: 200px;
+    height: 200px;
+    animation: spin 2s linear infinite;
+    display: flex;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
