@@ -2,7 +2,7 @@ const AssetsAccountant = artifacts.require("AssetsAccountant");
 const HouseOfCoin = artifacts.require("HouseOfCoin");
 const HouseOfReserve = artifacts.require("HouseOfReserve");
 const MockOracle = artifacts.require("MockOracle");
-const DigitalFiat = artifacts.require("DigitalFiat");
+const MockeFiat = artifacts.require("MockeFiat");
 const MockWETH = artifacts.require("MockWETH");
 
 const DEPOSIT_AMOUNT = web3.utils.toBN(web3.utils.toWei("2", "ether"));
@@ -42,7 +42,7 @@ describe('efiat Sytem Tests', function () {
         coinhouse = await HouseOfCoin.deployed();
         reservehouse = await HouseOfReserve.deployed();
         mockoracle = await MockOracle.deployed();
-        fiat = await DigitalFiat.deployed();
+        fiat = await MockeFiat.deployed();
         mockweth = await MockWETH.deployed();
 
         rid = await reservehouse.reserveTokenID();
