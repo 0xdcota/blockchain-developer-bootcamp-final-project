@@ -16,7 +16,6 @@ const triggerOnChainButton = document.getElementById('triggerOnChain');
 const wethDepositInput = document.getElementById('wethDepositInput');
 const wethWithdrawInput = document.getElementById('wethWithdrawInput');
 const efiatMintInput = document.getElementById('efiatMintInput');
-const reserveAddrToUse = document.getElementById('reserveAddrToUse');
 const efiatPaybackInput = document.getElementById('efiatPaybackInput');
 // Labels
 const getAccountsResult = document.getElementById('getAccountsResult');
@@ -26,6 +25,7 @@ const getWETHBalance = document.getElementById('getWETHBalance');
 const yourReserves = document.getElementById('yourReserves');
 const lockedReserves = document.getElementById('lockedReserves');
 const collateralRatio = document.getElementById('collateralRatio');
+const efiatAddr = document.getElementById('efiatAddr');
 const MockeFiatBalance = document.getElementById('mockEfiatBalance');
 const yourMinted = document.getElementById('yourMinted');
 const mintPower = document.getElementById('yourMintPower');
@@ -139,6 +139,7 @@ const getMockeFiatBalance = async () => {
   try {
     let mefiatBal = await mockefiat.balanceOf(accounts[0]);
     mefiatBal = mefiatBal/1e18;
+    efiatAddr.innerHTML = mockefiat.address;
     MockeFiatBalance.innerHTML = moneyFormat(mefiatBal);
   } catch (error) {
     console.log("failed getMockeFiatBalance");
@@ -240,8 +241,9 @@ const getOnChainOraclePrice = async () => {
   try {
     let wmockoracle = redstoneWrap(mockoracle);
     let price = await wmockoracle.redstoneGetLastPrice();
-    console.log(price.toString());
-    onChainPrice.innerHTML = price.toString();  
+    price = price/1e8;
+    console.log("onChainOraclePrice: ", price.toFixed(2));
+    onChainPrice.innerHTML = moneyFormat(price);  
   } catch (error) {
     console.log("failed getOnChainOraclePrice");
     console.log(error);
@@ -289,6 +291,7 @@ const approveERC20 = async () => {
   } else {
     $('#loadcircle').show();
     try {
+      inputVal = ethers.utils.parseUnits(inputVal.toString(), 18);
       let approvaltx = await mockweth.approve(
         reservehouse.address,
         inputVal
@@ -327,6 +330,7 @@ const withdrawReserve = async () => {
   if (!inputVal) {
     alert("enter withdraw amount value!");
   } else {
+    inputVal = ethers.utils.parseUnits(inputVal.toString(), 18);
     inputValBN = ethers.BigNumber.from(inputVal);
     if (inputValBN.gt(reserveBal)) {
       alert("cannot withdraw more that reserves!");
@@ -350,37 +354,33 @@ const withdrawReserve = async () => {
     
 
 const mintEfiat = async () => {
-    let inputVal = document.getElementById("efiatMintInput").value;
-    let reserveAddress = document.getElementById("reserveAddrToUse").value;
-    if(!inputVal) {
-      alert("enter amount value!");
-    } else {
-      if (!reserveAddress) {
-        alert("enter address value!");
-      } else {
-        $('#loadcircle').show();
-        try {
-          let inputValBN = ethers.BigNumber.from(inputVal);
-          let tokenID = await reservehouse.reserveTokenID();
-          let hOfReserve = await accountant.houseOfReserves(tokenID);
-          console.log(reserveAddress,hOfReserve,inputValBN);
-          let mintTx = await coinhouse.mintCoin(
-            reserveAddress,
-            hOfReserve,
-            inputValBN
-          )
-          console.log('mintCoin TxHash', mintTx);
-          let receipt = await mintTx.wait();
-          console.log("receipt", receipt);
-          await getAllUpdateView();
-          alert('Successful Transaction!');
-        } catch (error) {
-          alert(`mintEfiat Failed! ${error.data.message}`);
-          $('#loadcircle').hide(); 
-        }
-        $('#loadcircle').hide();
-      }
+  let inputVal = document.getElementById("efiatMintInput").value;
+  if(!inputVal) {
+    alert("enter amount value!");
+  } else {
+    $('#loadcircle').show();
+    try {
+      inputVal = ethers.utils.parseUnits(inputVal.toString(), 18);
+      let inputValBN = ethers.BigNumber.from(inputVal);
+      let tokenID = await reservehouse.reserveTokenID();
+      let hOfReserve = await accountant.houseOfReserves(tokenID);
+      console.log(reserveAddress,hOfReserve,inputValBN);
+      let mintTx = await coinhouse.mintCoin(
+        mockweth.address,
+        hOfReserve,
+        inputValBN
+      )
+      console.log('mintCoin TxHash', mintTx);
+      let receipt = await mintTx.wait();
+      console.log("receipt", receipt);
+      await getAllUpdateView();
+      alert('Successful Transaction!');
+    } catch (error) {
+      alert(`mintEfiat Failed! ${error.data.message}`);
+      $('#loadcircle').hide(); 
     }
+    $('#loadcircle').hide();
+  }
 }
 
 
@@ -391,6 +391,7 @@ const paybackEfiat = async () => {
   } else {
     $('#loadcircle').show();
     try {
+      inputVal = ethers.utils.parseUnits(inputVal.toString(), 18);
       let inputValBN = ethers.BigNumber.from(inputVal);
       let tokenID = await reservehouse.backedTokenID();
       let paybackTx = await coinhouse.paybackCoin(

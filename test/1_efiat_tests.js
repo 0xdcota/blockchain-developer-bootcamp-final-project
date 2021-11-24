@@ -1,8 +1,7 @@
 const AssetsAccountant = artifacts.require("AssetsAccountant");
 const HouseOfCoin = artifacts.require("HouseOfCoin");
 const HouseOfReserve = artifacts.require("HouseOfReserve");
-const MockOracle = artifacts.require("MockOracle");
-const DigitalFiat = artifacts.require("DigitalFiat");
+const DigitalFiat = artifacts.require("MockeFiat");
 const MockWETH = artifacts.require("MockWETH");
 
 const DEPOSIT_AMOUNT = web3.utils.toBN(web3.utils.toWei("2", "ether"));
@@ -26,7 +25,6 @@ describe('efiat Sytem Tests', function () {
     let accountant;
     let coinhouse;
     let reservehouse;
-    let mockoracle;
     let fiat;
     let mockweth;
     let snapshotId;
@@ -41,7 +39,6 @@ describe('efiat Sytem Tests', function () {
         accountant = await AssetsAccountant.deployed();
         coinhouse = await HouseOfCoin.deployed();
         reservehouse = await HouseOfReserve.deployed();
-        mockoracle = await MockOracle.deployed();
         fiat = await DigitalFiat.deployed();
         mockweth = await MockWETH.deployed();
 
@@ -300,13 +297,13 @@ describe('efiat Sytem Tests', function () {
         it("Should compute minting power properly", async () => {
             let user = accounts[6];
             // Compute expected minting power
-            const price = await mockoracle.getLastPrice();
+            const price = await coinhouse.redstoneGetLastPrice();
             const collateralRatio = await reservehouse.collateralRatio();
             const reducedReserve = 
                 DEPOSIT_AMOUNT.mul(collateralRatio.denominator).div(collateralRatio.numerator);
             
-            const ETH_UNIT = web3.utils.toBN(web3.utils.toWei("1", "ether"));
-            const expMintPower = reducedReserve.mul(price).div(ETH_UNIT);
+            const UNIT = web3.utils.toBN("100000000");
+            const expMintPower = reducedReserve.mul(price).div(UNIT);
 
             // ERC20 Allowance
             await mockweth.approve(

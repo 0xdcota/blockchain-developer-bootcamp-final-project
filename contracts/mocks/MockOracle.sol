@@ -4,7 +4,7 @@ pragma solidity 0.8.2;
 /**
 * @title Mock Oracle contract used for testing.
 */
-import "redstone-flash-storage/lib/contracts/message-based/PriceAware.sol";
+import "./../connector/PriceAware.sol";
 
 contract MockOracleState{
 
@@ -31,12 +31,15 @@ contract MockOracle is MockOracleState, PriceAware {
         return lastPrice;
     }
 
-    function setPrice(uint newPrice) external onlyOwner {
+    function setPrice(uint newPrice) external {
         lastPrice = newPrice;
         lastTimestampUpdate = block.timestamp;
     }
 
     function redstoneGetLastPrice() external view returns(uint) {
-        return getPriceFromMsg(bytes32("MXNUSD=X"));
+        uint usdmxn = getPriceFromMsg(bytes32("MXNUSD=X"));
+        uint usdeth = getPriceFromMsg(bytes32("ETH"));
+        uint mxneth = (usdeth * 1e8) / usdmxn;
+        return mxneth;
     }
 }
