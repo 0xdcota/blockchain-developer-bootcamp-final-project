@@ -9,7 +9,7 @@
     "static-server": "^2.2.1"
   },
   "scripts": {
-    "ganache": "ganache-cli -d",
+    "ganache": "ganache-cli -d -e 10000",
     "server": "static-server",
     "deploy": "truffle migrate",
     "test": "truffle test",

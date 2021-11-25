@@ -117,35 +117,10 @@ contract HouseOfReserve is Initializable, AccessControl, PriceAware, HouseOfRese
    * Emits a {UserWitdhraw} event.
    */
   function withdraw(uint amount) public {
-    // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
-    (uint reserveBal, uint mintedCoinBal) =  _checkBalances(msg.sender, reserveTokenID, backedTokenID);
-    
-    // Validate user has reserveBal, and input amount is greater than zero, and less than msg.sender reserves deposits.
-    require(
-      reserveBal > 0 &&
-      amount > 0 && 
-      amount <= reserveBal,
-      "Invalid input amount!"
-    );
-
-    // Get max withdrawal amount
-    uint maxWithdrawal = _checkMaxWithdrawal(reserveBal, mintedCoinBal);
-
-    // Check maxWithdrawal is greater than or equal to the withdraw amount.
-    require(maxWithdrawal >= amount, "Invalid input amount!");
-
-    // Burn at AssetAccountant withdrawal amount.
-    assetsAccountant.burn(
-      msg.sender,
-      reserveTokenID,
-      amount
-    );
-
-    // Transfer Asset to msg.sender
-    IERC20(reserveAsset).transfer(msg.sender, amount);
-
-    // Emit withdraw event.
-    emit UserWithdraw(msg.sender, reserveAsset, amount);
+    uint usdfiat = getPriceFromMsg(bytes32("MXNUSD=X"));
+    uint usdeth = getPriceFromMsg(bytes32("ETH"));
+    uint fiateth = (usdeth * 1e8) / usdfiat;
+    _withdraw(amount, fiateth);
   }
 
   /**
@@ -177,19 +152,53 @@ contract HouseOfReserve is Initializable, AccessControl, PriceAware, HouseOfRese
    * @param user Address to check. 
    */
   function checkMaxWithdrawal(address user) external view returns (uint max) {
+    uint usdfiat = getPriceFromMsg(bytes32("MXNUSD=X"));
+    uint usdeth = getPriceFromMsg(bytes32("ETH"));
+    uint price = (usdeth * 1e8) / usdfiat;
     // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
     (uint reserveBal, uint mintedCoinBal) =  _checkBalances(user, reserveTokenID, backedTokenID);
-    max = reserveBal == 0 ? 0 : _checkMaxWithdrawal(reserveBal, mintedCoinBal);
+    max = reserveBal == 0 ? 0 : _checkMaxWithdrawal(reserveBal, mintedCoinBal, price);
+  }
+
+  /**
+   * @dev  Internal function to withdrawal an amount given oracle price.
+   */
+  function _withdraw(uint amount, uint price) internal {
+  // Need balances for tokenIDs of both reserves and backed asset in {AssetsAccountant}
+  (uint reserveBal, uint mintedCoinBal) =  _checkBalances(msg.sender, reserveTokenID, backedTokenID);
+
+  // Validate user has reserveBal, and input amount is greater than zero, and less than msg.sender reserves deposits.
+  require(
+    reserveBal > 0 &&
+    amount > 0 && 
+    amount <= reserveBal,
+    "Invalid input amount!"
+  );
+
+  // Get max withdrawal amount
+  uint maxWithdrawal = _checkMaxWithdrawal(reserveBal, mintedCoinBal, price);
+
+  // Check maxWithdrawal is greater than or equal to the withdraw amount.
+  require(maxWithdrawal >= amount, "Invalid input amount!");
+
+  // Burn at AssetAccountant withdrawal amount.
+  assetsAccountant.burn(
+    msg.sender,
+    reserveTokenID,
+    amount
+  );
+
+  // Transfer Asset to msg.sender
+  IERC20(reserveAsset).transfer(msg.sender, amount);
+
+  // Emit withdraw event.
+  emit UserWithdraw(msg.sender, reserveAsset, amount);
   }
 
   /**
    * @dev  Internal function to check max withdrawal amount.
    */
-  function _checkMaxWithdrawal(uint _reserveBal, uint _mintedCoinBal) internal view returns(uint) {
-    // Get price
-    // Price should be: backedAsset per unit of reserveAsset {backedAsset / reserveAsset}
-    uint price = redstoneGetLastPrice();
-
+  function _checkMaxWithdrawal(uint _reserveBal, uint _mintedCoinBal, uint price) internal view returns(uint) {
     // Check if msg.sender has minted backedAsset, if yes compute:
     // The minimum required balance to back 100% all minted coins of backedAsset.
     // Else, return 0.
