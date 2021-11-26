@@ -40,7 +40,8 @@ Open a browser and go to: `http://localhost:9080/`
 - Reset Metamask accounts if ganache-cli is restarted.
 
 ## Run Unit Tests
-Ensure you have pre-requesites indicated in Set up sections.
+Ensure you have the installed pre-requesites indicated in Set up sections.
+ - Clone repository and ensure you are in the 'main' branch.
  - Open two terminals.
  - Install dependencies (if haven't already):` yarn install`
  - In one terminal run the development blockchain: `yarn ganache`
